@@ -1,0 +1,242 @@
+# Layout Discipline — Tables, Figures, Floats, Cross-references
+
+## Why this exists
+
+A first draft is usually layout-naive: tables are bare `\begin{tabular}` blocks, figures use `[h]`, and the author block has no disclosure footnote. These choices break in real journal/conference templates and look amateurish even where they don't break. This reference fixes them.
+
+## Tables
+
+### Always wrap in a `table` float
+
+A bare `\begin{tabular}` in body text gets the wrong placement, no caption, no label, and breaks awkwardly across columns. Wrap every table:
+
+```latex
+\begin{table}[!t]
+  \centering
+  \small                                  % font
+  \setlength{\tabcolsep}{4pt}             % column padding
+  \caption{One-sentence standalone description.}
+  \label{tab:main}
+  \begin{tabular}{l c c c c}
+    \toprule
+    Method & ETTm1 & Electricity & Traffic & Weather \\
+    \midrule
+    DLinear~\cite{zeng2023dlinear} & 0.382 & 0.166 & 0.434 & 0.241 \\
+    PatchTST~\cite{nie2023patchtst} & 0.366 & 0.158 & 0.412 & 0.227 \\
+    \midrule
+    \textbf{Ours} & \textbf{0.354} & \textbf{0.149} & \textbf{0.402} & \textbf{0.220} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+```
+
+### Float placement
+
+- `[!t]` — top of column/page. Default for tables and figures in research papers.
+- `[!t]` failing repeatedly → try `[!ht]` (top, otherwise here).
+- Avoid `[h]` and `[h!]` — they cause floats to land in the middle of paragraphs and almost always look wrong.
+- Avoid `[H]` (forced placement, requires `float` package) except when necessary.
+- This template is **single-column** `article`, so `table*`/`figure*` span nothing extra. For a wide table that overruns the text width, shrink to fit instead: `\small`/`\footnotesize`, tighter `\tabcolsep`, `tabularx` with an `X` column, or wrap the `tabular` in `\resizebox{\linewidth}{!}{…}`. (Only switch to `table*` if you have actually moved this paper to a two-column class.)
+
+### Style
+
+- **Always use `booktabs`**: `\toprule`, `\midrule`, `\bottomrule`. Never `\hline | \hline`.
+- **Don't use vertical rules** (`|` in column spec). Booktabs intentionally omits them.
+- **Numbers right-aligned** when comparing magnitudes — column spec `r` or `S` (siunitx).
+- **Bold the best per row** with `\textbf{}`. If your method is best in 4/5 columns, bold those 4; don't bold the loss.
+- **Footnotes**: use `\multicolumn{N}{l}{\small Notes...}` row at the bottom rather than `\footnote{}` (which doesn't work inside floats).
+- **Caption above OR below**: scientific convention is **above** for tables (`\caption{}` before `\begin{tabular}` or just after `\centering`), **below** for figures. The example above puts it above.
+
+### Caption rule
+
+A caption must let a reader who reads only the caption + table understand what's shown. "Results." is not a caption. Aim for 1–3 sentences:
+
+> "MSE on long-horizon forecasting at $H{=}336$ (three-seed mean; lower is better). Bold marks the best per dataset. Numbers are simulated."
+
+## Figures
+
+### Float wrapper
+
+```latex
+\begin{figure}[!t]
+  \centering
+  \includegraphics[width=0.95\linewidth]{figures/fig_02_horizon_sweep.pdf}
+  \caption{MSE vs.\ forecast horizon on ETTm1. Curves cross around $H{=}192$, illustrating that...}
+  \label{fig:horizon_sweep}
+\end{figure}
+```
+
+### Width
+
+- Single-column layout (current template): `\includegraphics[width=0.85\linewidth]{...}`; wrap TikZ in `\resizebox{\linewidth}{!}{…}`. Never a bare `\includegraphics{file}`.
+- `figure*` buys no width here (single column) — only use it after genuinely switching to a two-column class.
+
+### Path
+
+`\includegraphics{figures/<basename>}` — never absolute. Save every figure inside `$RUN/figures/` (i.e., `output/cap-paper-writer/<slug>/latest/paper/figures/`) so the basename resolves.
+
+### Caption
+
+Same standalone-readable rule as tables. Caption goes **below** the figure (after `\includegraphics`, before `\end{figure}`).
+
+### Multi-panel
+
+```latex
+\begin{figure}[!t]
+  \centering
+  \begin{subfigure}[t]{0.48\linewidth}
+    \includegraphics[width=\linewidth]{figures/fig_a.pdf}
+    \caption{ETTm1.}
+    \label{fig:panel_a}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{0.48\linewidth}
+    \includegraphics[width=\linewidth]{figures/fig_b.pdf}
+    \caption{Electricity.}
+    \label{fig:panel_b}
+  \end{subfigure}
+  \caption{Per-dataset comparison. (a) ETTm1: ... (b) Electricity: ...}
+  \label{fig:panel}
+\end{figure}
+```
+
+The template already loads `subcaption`. Reference panels with `\ref{fig:panel_a}`.
+
+## Cross-references
+
+### Every label must be referenced
+
+If you `\label{eq:patch}`, refer to it later with `Eq.~\ref{eq:patch}`. Same for `\label{tab:...}`, `\label{fig:...}`, `\label{sec:...}`.
+
+Search:
+
+```bash
+grep -oE '\\label\{[^}]+\}' output/<slug>/latest/paper/sections/*.tex | sort -u > /tmp/labels.txt
+grep -oE '\\ref\{[^}]+\}' output/<slug>/latest/paper/sections/*.tex | sort -u > /tmp/refs.txt
+diff /tmp/labels.txt /tmp/refs.txt
+```
+
+Anything in `labels.txt` not in `refs.txt` is a label nobody references. Either add a `\ref` or drop the label.
+
+### Non-breaking spaces
+
+Use `~` not a regular space:
+
+- `Section~\ref{sec:related}`
+- `Eq.~\ref{eq:patch}`
+- `Table~\ref{tab:main}`
+- `Figure~\ref{fig:horizon_sweep}` (or just `Fig.~\ref{...}`)
+
+This prevents the number from floating to the next line away from "Section" / "Eq." / etc.
+
+### Citation tilde
+
+Same logic for citations:
+
+```latex
+Building on PatchTST~\cite{nie2023patchtst}, we ...
+```
+
+Not:
+
+```latex
+Building on PatchTST \cite{nie2023patchtst}, we ...
+```
+
+## Author and disclosure footnote
+
+**Author:** the default template uses `\author{AI4S Agent}`. Keep this unless the user has provided a specific author block.
+
+**Always-on disclosure:** every paper produced via this SKILL must carry a `\thanks` footnote on the author block that
+(a) identifies the paper as generated by the AI4S Agent,
+(b) recommends human review by a domain expert before any scientific publication or production use,
+(c) when results are simulated, additionally flags that the numerical results are simulated.
+
+**Do not** put `\input{simulated}` inside `\title{}` — it can break title formatting. Always attach disclosure to `\author{}` via `\thanks`.
+
+### Real (or partially real) results — minimum disclosure
+
+```latex
+\author{AI4S Agent\thanks{This manuscript was generated by the AI4S Agent. \textbf{Human review by a domain expert is strongly recommended} before any scientific publication or production use.}}
+```
+
+### Simulated results — extended disclosure
+
+```latex
+\author{AI4S Agent\thanks{This manuscript was generated by the AI4S Agent. Numerical results in this version are \textbf{simulated} to demonstrate the paper-generation procedure; replacing them with measurements from the released code is the next step. \textbf{Human review by a domain expert is strongly recommended} before any scientific publication or production use.}}
+```
+
+### Why both clauses
+
+- The "human review" clause is **always** present. AI-generated research artefacts can be confidently wrong; an expert in the loop is non-negotiable for any externally facing use.
+- The "simulated" clause is added only when results were not measured (e.g., experiment-suite ran in simulation mode). Once real numbers are wired in, drop the simulated clause but keep the human-review clause.
+
+### Optional: banner for high-visibility cases
+
+If the simulated nature must be impossible to miss (e.g., the paper is being shared with non-technical readers), add a banner after `\maketitle` in addition to the `\thanks`:
+
+```latex
+\maketitle
+
+\begin{center}
+  \fbox{\parbox{0.95\linewidth}{\centering\small\textbf{Notice:} numerical results in this manuscript are simulated for demonstration purposes. Human review is strongly recommended.}}
+\end{center}
+```
+
+Use the banner sparingly — the `\thanks` footnote is enough for normal cases.
+
+## Common compile errors
+
+### `Citation X undefined`
+
+- The bib_key in `\cite{X}` does not appear in `bibliography.bib`. Check spelling.
+- Or you forgot to run `bibtex main` between `pdflatex` passes.
+- Compile sequence is: `pdflatex` → `bibtex` → `pdflatex` → `pdflatex` (three latex passes total).
+
+### `Missing $ inserted`
+
+- Math symbol used outside math mode. Wrap with `$...$`.
+- Underscore in non-math text: escape with `\_` (e.g., `\textit{my\_var}`).
+
+### `Overfull \hbox`
+
+- A line is wider than the column. Caused by long unbreakable strings (URLs, long bib keys in a `\cite{}` group, equations).
+- Fix by: breaking the line, using `\sloppy`, or shortening the offending text.
+
+### `Float too large for page`
+
+- A figure or table is larger than text height/width.
+- Reduce `width=`, or wrap the content in `\resizebox{\linewidth}{!}{…}` (TikZ/tabular). `figure*`/`table*` don't help in this single-column template.
+
+### `Underfull \hbox`
+
+- Less serious; usually safe to ignore unless layout looks broken.
+
+### LaTeX failed to compile but PDF exists
+
+- pdflatex returns non-zero on undefined citations even though the PDF is generated.
+- When debugging: if `pdflatex` prints an error but still emits `main.pdf`, **still fix the error**. Reviewers see warnings.
+
+## Verification commands
+
+After any compile:
+
+```bash
+cd output/paper
+grep -E "Citation .* undefined" main.log    # must be empty
+grep -E "Reference .* undefined" main.log   # must be empty
+grep -E "Overfull|Underfull" main.log | head # should be near-empty
+ls main.pdf                                  # must exist
+pdfinfo main.pdf | grep Pages                # must be ≥ target
+```
+
+## Quick checklist
+
+- [ ] Every table wrapped in `\begin{table}[!t]` with caption + label, using `booktabs`
+- [ ] Every figure wrapped in `\begin{figure}[!t]` with caption + label
+- [ ] Captions are standalone-readable (1–3 sentences, not "Results.")
+- [ ] Cross-refs use non-breaking space (`~`)
+- [ ] Best cell per row bolded; never bold by default
+- [ ] No vertical rules in tables; no `\hline` inside `\toprule`/`\midrule`/`\bottomrule`
+- [ ] Author = `AI4S Agent`; `\thanks` footnote present with always-on human-review clause; simulated clause added when applicable. Never embed `\input{simulated}` in `\title{}`.
+- [ ] Final compile log: 0 undefined citations, 0 undefined references, ≤ a couple of overfull warnings

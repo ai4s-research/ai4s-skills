@@ -1,0 +1,59 @@
+% =================================================================
+% RESEARCH PAPER TEMPLATE / 研究论文模板
+% =================================================================
+% Two-column layout for conference/journal submission
+% =================================================================
+
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb,amsfonts}
+% Helvetica for \sffamily so diagram labels match the Nature/Science sans-serif
+% convention while body text stays serif (familydefault unchanged).
+\usepackage[scaled]{helvet}
+\usepackage[a4paper, margin=0.8in]{geometry}
+\setlength{\columnsep}{0.25in}
+\setlength{\columnseprule}{0pt}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{microtype}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{subcaption}
+% Diagrams: TikZ for flow/architecture, forest for hierarchies/trees (auto-spaced,
+% no overlap). graphicx (above) provides \resizebox to clamp a figure to \linewidth.
+\usepackage{tikz}
+\usetikzlibrary{positioning, shapes.geometric, arrows.meta, fit, backgrounds, calc}
+\usepackage{forest}
+
+\newcommand{\todo}[1]{\textcolor{red}{[TODO: #1]}}
+
+\title{\textbf{{{TITLE}}}}
+% Author defaults to "AI4S Agent". The enrichment step
+% (see .claude/skills/paper-writer/SKILL.md Step 3) is responsible for adding
+% a \thanks footnote that always recommends human review and additionally
+% flags simulated numerics when applicable.
+\author{AI4S Agent}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\input{sections/abstract}
+\input{sections/introduction}
+\input{sections/related_work}
+\input{sections/method}
+\input{sections/experiment}
+\input{sections/results}
+\input{sections/conclusion}
+
+\bibliographystyle{plainnat}
+\bibliography{bibliography}
+
+\end{document}

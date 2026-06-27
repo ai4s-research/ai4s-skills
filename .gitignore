@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# Agent run outputs (skills write here at runtime; never commit)
+output/
+**/output/
+work/
+mindmap-output/
+
+# LaTeX intermediates
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.toc
+*.synctex.gz
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
