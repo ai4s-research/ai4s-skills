@@ -1,6 +1,6 @@
 ---
 name: integrity-auditor
-description: Use when the user wants a paper audited for integrity issues — image misuse, numerical anomalies, logical gaps — and needs a reviewable evidence report. Works on external papers (PDF / DOI / arXiv) and on in-platform `cap-paper-writer` outputs. Single-stage SKILL, no Python runtime in the cap.
+description: Use when the user wants a paper audited for integrity issues — image misuse, numerical anomalies, logical gaps — and needs a reviewable evidence report. Works on external papers (PDF / DOI / arXiv) and on outputs from a local paper-writer run. Single-stage skill.
 ---
 
 # Integrity Auditor
@@ -8,6 +8,8 @@ description: Use when the user wants a paper audited for integrity issues — im
 ## Overview
 
 Paper-integrity audit package. **Single stage, full quality from the start.** The agent reads each reference, then carries out three evidence tracks (image / numerical / logical) and produces a structured `audit_report.md` with Level 1–4 graded findings.
+
+This skill ships no LLM SDK — it is the skill instructions, references, templates, and single-purpose `forensics_tools/` only.
 
 The substantive work is decomposed into reference playbooks under `references/`:
 
@@ -40,7 +42,7 @@ Also:
 ## When to Use
 
 - User hands you a paper (PDF / DOI / arXiv ID) and asks whether the figures / data / logic are trustworthy.
-- User wants a quality gate on this platform's own `cap-paper-writer` output (slug-based).
+- User wants a quality gate on outputs from a local paper-writer run (slug-based).
 - Reviewer / investigator wants a reviewable-evidence document to forward to authors or an integrity body.
 
 ## When NOT to Use
@@ -48,7 +50,7 @@ Also:
 - User wants to write a paper → `paper-writer`.
 - User wants to build / run an experiment → `experiment-suite`.
 - User wants a literature survey → `literature-survey`.
-- User wants a verdict ("is this fraud?") — this cap produces evidence and grading, never verdicts.
+- User wants a verdict ("is this fraud?") — this skill produces evidence and grading, never verdicts.
 
 ## Workflow
 
@@ -60,22 +62,22 @@ Detect input mode:
 |---|---|---|
 | **PDF path** | local `*.pdf` argument | use directly |
 | **DOI / arXiv ID** | `10.xxxx/...`, `arXiv:NNNN.NNNNN` | `WebFetch` landing page; record DOI / arXiv URL and abstract; download PDF if open-access |
-| **In-platform slug** | matches `output/cap-paper-writer/<slug>/latest/` | use slug directly; also read `output/cap-experiment-suite/<slug>/latest/` if present |
+| **Local paper-writer slug** | matches `output/paper-writer/<slug>/latest/` | use slug directly; also read `output/experiment-suite/<slug>/latest/` if present |
 
 Compute slug:
 
 ```bash
 TITLE_OR_ID="<input identifier>"
 SLUG=$(python3 -c "import re,hashlib,sys; t=sys.argv[1]; n=re.sub(r'[\\s_]+','-',re.sub(r'[^\\w\\s-]','',t.lower().strip())).strip('-')[:40].rstrip('-'); h=hashlib.sha1(t.encode()).hexdigest()[:8]; print(f'{n}-{h}')" "$TITLE_OR_ID")
-# For in-platform mode, set SLUG to the existing paper-writer slug directly.
+# For local-slug mode, set SLUG to the existing paper-writer slug directly.
 TS=$(date +%Y-%m-%d_%H%M%S)
-RUN=output/cap-integrity-auditor/$SLUG/$TS
+RUN=output/integrity-auditor/$SLUG/$TS
 
 mkdir -p "$RUN/findings/image" "$RUN/findings/numerical" "$RUN/findings/logical"
-ln -sfn "$TS" "output/cap-integrity-auditor/$SLUG/latest"
+ln -sfn "$TS" "output/integrity-auditor/$SLUG/latest"
 ```
 
-In commands below `$RUN` = `output/cap-integrity-auditor/<slug>/latest`.
+In commands below `$RUN` = `output/integrity-auditor/<slug>/latest`.
 
 ### Step 2 — Gather materials into the run
 
@@ -88,7 +90,7 @@ Acquisition order (try every step; do not stop early):
 3. **Author Correction PDF** — `curl -sL -A "Mozilla/5.0" "<correction URL>.pdf" -o $RUN/correction.pdf` then `file $RUN/correction.pdf` to confirm it is a real PDF (not HTML auth wall).
 3a. **CRITICAL — the correction's own supplementary** — fetch the correction's landing HTML, grep for its `MOESM` supplementary URLs (separate DOI namespace from the parent article), download every one. These often contain the **pre-correction** originals of replaced figures. See `references/02a-supplement-acquisition.md` for the exact recipe. Empirical baseline: the Wang Ping 2025 Nature audit only surfaced its image-track Level 4 finding because the correction's `MOESM1_ESM.pdf` carried the original (pre-correction) Fig 2 and Extended Data Figs 7, 10.
 4. **Article PDF** — `curl -sL -A "Mozilla/5.0" "<article URL>.pdf" -o $RUN/paper.pdf` then `file $RUN/paper.pdf`. If gated, record that fact in the manifest and continue with whatever the earlier steps acquired.
-5. **For in-platform slugs only**: read the matching `results.json`, `data_contract.md`, `figures/manifest.json`, `bibliography.bib`.
+5. **For a local paper-writer slug only**: read the matching `results.json`, `data_contract.md`, `figures/manifest.json`, `bibliography.bib`.
 
 Write `$RUN/input_manifest.md` listing every artefact actually acquired. At minimum it must enumerate what was downloaded and what was attempted-but-blocked.
 
@@ -103,7 +105,7 @@ mkdir -p "$RUN/panels"
 pdfimages -all "$PDF" "$RUN/panels/page"
 N_RASTER=$(ls "$RUN/panels" 2>/dev/null | wc -l)
 
-# Fallback for vector-figure papers (e.g., cap-paper-writer outputs):
+# Fallback for vector-figure papers (e.g., paper-writer outputs):
 # pdfimages only extracts embedded raster images; a paper built from matplotlib
 # vector PDFs through \includegraphics will yield zero panels here. In that case,
 # render each page to a PNG so visual inspection is still possible.
@@ -111,12 +113,12 @@ if [ "$N_RASTER" -eq 0 ]; then
   pdftoppm -r 150 "$PDF" "$RUN/panels/page" -png
 fi
 
-# For in-platform slug audits, also pull the production-side figure PDFs directly
+# For a local paper-writer slug audit, also pull the production-side figure PDFs directly
 # (these are the originals, before LaTeX embedding):
 if [ "$INPUT_MODE" = "slug" ]; then
   mkdir -p "$RUN/figures_from_suite"
-  cp output/cap-experiment-suite/$SLUG/latest/figures/*.pdf "$RUN/figures_from_suite/" 2>/dev/null
-  cp output/cap-experiment-suite/$SLUG/latest/figures/manifest.json "$RUN/figures_from_suite/" 2>/dev/null
+  cp output/experiment-suite/$SLUG/latest/figures/*.pdf "$RUN/figures_from_suite/" 2>/dev/null
+  cp output/experiment-suite/$SLUG/latest/figures/manifest.json "$RUN/figures_from_suite/" 2>/dev/null
 fi
 
 ls "$RUN/panels" | wc -l   # record in input_manifest.md
@@ -124,7 +126,7 @@ ls "$RUN/panels" | wc -l   # record in input_manifest.md
 
 If `pdfimages` / `pdftotext` / `pdftoppm` from poppler-utils is not installed, install via system package manager and retry. Do not proceed without either raster panels or page renderings — image evidence track depends on them.
 
-If the article PDF is paywalled **and** the article HTML page yields no supplementary or figure CDN URLs **and** the Author Correction PDF is also gated, then and only then write `_paywall_blocked.md` per track. The Wang Ping 2025 Nature audit (`output/cap-integrity-auditor/wang-ping-hdac6-valine-10-1038-s41586-024-08248-5/latest/`) demonstrates that the article body being gated says nothing about whether the supplementary source data is gated; the latter is almost always open and is where the substantive audit lives.
+If the article PDF is paywalled **and** the article HTML page yields no supplementary or figure CDN URLs **and** the Author Correction PDF is also gated, then and only then write `_paywall_blocked.md` per track. The Wang Ping 2025 Nature audit (`output/integrity-auditor/wang-ping-hdac6-valine-10-1038-s41586-024-08248-5/latest/`) demonstrates that the article body being gated says nothing about whether the supplementary source data is gated; the latter is almost always open and is where the substantive audit lives.
 
 ### Step 3 — Run the three audit tracks (REQUIRED — this is the whole job)
 
@@ -163,7 +165,7 @@ For **ml** class: forensics tools do not apply (schematic figures lack pixel-lev
 
 **Open:** `references/02-numerical-evidence.md` (for bio class) or `references/02b-ml-paper-arithmetic.md` (for ml class). Bio class: extract every numeric claim from `paper.txt` with its location (section / figure / table); recompute means / SDs / SEMs against source data when available; otherwise check internal consistency (does `n=6` in the body match the figure caption?); run the four sweepers (Checks 1–4). ML class: arithmetic re-derive every quoted delta / average / improvement against the table cells (Checks 1–4 are inapplicable; record as `_inapplicable.md` and the arithmetic re-derivation as `_clean.md` or as one finding per mismatch).
 
-Each mismatch (either class) becomes `$RUN/findings/numerical/<short-id>.md`. For an in-platform slug, also reconcile every number in the paper against `output/cap-experiment-suite/<slug>/latest/results.json` — every reported metric must trace back to a `summary` or `runs` entry.
+Each mismatch (either class) becomes `$RUN/findings/numerical/<short-id>.md`. For a local paper-writer slug, also reconcile every number in the paper against `output/experiment-suite/<slug>/latest/results.json` — every reported metric must trace back to a `summary` or `runs` entry.
 
 In addition (both classes), run **Check 5 — variance-reporting consistency** from `references/02-numerical-evidence.md`: scan every table caption for restart / seed / std / error-bar mentions; flag the case where some tables in the same paper report restart-averaged numbers and others do not, when the un-averaged tables carry sub-1-pp claims. This was the BERT NSP-overclaim finding mechanism.
 
@@ -183,30 +185,30 @@ In addition (both classes), run **Check 5 — variance-reporting consistency** f
 
 Report:
 
-1. `output/cap-integrity-auditor/<slug>/latest/input_manifest.md`
-2. `output/cap-integrity-auditor/<slug>/latest/findings/{image,numerical,logical}/*.md`
-3. `output/cap-integrity-auditor/<slug>/latest/audit_report.md`
+1. `output/integrity-auditor/<slug>/latest/input_manifest.md`
+2. `output/integrity-auditor/<slug>/latest/findings/{image,numerical,logical}/*.md`
+3. `output/integrity-auditor/<slug>/latest/audit_report.md`
 4. Stats per the report format in `references/05-quality-gate.md`.
 
-## Cross-cap data flow (path convention)
+## Cross-skill data flow (path convention)
 
-When the input is an in-platform slug, the auditor is **read-only** against:
+When the input is a local paper-writer slug, the auditor is **read-only** against:
 
-- `output/cap-paper-writer/<slug>/latest/paper/main.pdf` — the paper under audit
-- `output/cap-paper-writer/<slug>/latest/paper/bibliography.bib` — citation provenance
-- `output/cap-experiment-suite/<slug>/latest/results.json` — numerical ground truth + `provenance.mode` (every "measured" claim in the paper must be backed here)
-- `output/cap-experiment-suite/<slug>/latest/data_contract.md` — dataset binding (does the data actually exist; checksum recoverable)
-- `output/cap-experiment-suite/<slug>/latest/figures/manifest.json` — figures the paper is allowed to reference (basenames only)
+- `output/paper-writer/<slug>/latest/paper/main.pdf` — the paper under audit
+- `output/paper-writer/<slug>/latest/paper/bibliography.bib` — citation provenance
+- `output/experiment-suite/<slug>/latest/results.json` — numerical ground truth + `provenance.mode` (every "measured" claim in the paper must be backed here)
+- `output/experiment-suite/<slug>/latest/data_contract.md` — dataset binding (does the data actually exist; checksum recoverable)
+- `output/experiment-suite/<slug>/latest/figures/manifest.json` — figures the paper is allowed to reference (basenames only)
 
-Never modify another cap's outputs. The audit is a third-party read.
+Never modify another skill's outputs. The audit is a third-party read.
 
 ## Important rules
 
-- **No LLM SDK in this cap.** No `import anthropic` / `import openai`. The cap is SKILL + references + template only.
+- **No LLM SDK in this skill.** No `import anthropic` / `import openai`. The skill is its instructions + references + template only.
 - **Findings are evidence, not verdicts.** Use Level 1–4 grading. Never write "this is fraudulent" — write "this requires raw data to resolve" or "this is inconsistent with §3.2 caption".
 - **Every Level ≥ 2 finding must be reviewable.** That means: figure id + panel coordinates / page-line pointer + transformation description + the raw data the author should supply.
 - **Absence of findings is also a result, BUT distinguish two cases:**
   - `_clean.md` — the track's tools/sweepers **were applicable and were run**, and produced no anomaly. List what was checked and what passed. Empirical baseline: Wang Ping numerical track Mode A swept all 14 XLSX sheets and found 5 hits — the other 9 would be `_clean.md` content if reported per-sheet.
   - `_inapplicable.md` — the track's tools **do not apply to this paper class** (e.g., biology image-dup on a pure ML schematic-figure paper). List which tools were considered and rejected, and what substitute check was used instead. Empirical baseline: BERT (arXiv:1810.04805) image track wrote `_inapplicable.md`; the substitute was figure-vs-text consistency.
   - These two states are **not interchangeable**. Calling an `_inapplicable.md` situation "clean" overstates audit coverage; calling a genuine `_clean.md` "inapplicable" understates it.
-- A pure-Python utility script (image hashing, P recompute, etc.) **is allowed** in this cap under a `forensics_tools/` directory if a concrete pain point demands it — the platform anti-pattern rule is against "skeleton → enrich" pipeline orchestrators and LLM SDK imports, not against single-purpose tools. v1 ships without `forensics_tools/`; revisit when needed.
+- A pure-Python utility script (image hashing, P recompute, etc.) **is allowed** in this skill under a `forensics_tools/` directory if a concrete pain point demands it — the anti-pattern rule is against "skeleton → enrich" pipeline orchestrators and LLM SDK imports, not against single-purpose tools. v1 ships without `forensics_tools/`; revisit when needed.

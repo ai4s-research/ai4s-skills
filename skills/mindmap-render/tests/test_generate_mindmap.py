@@ -6,7 +6,7 @@ from pathlib import Path
 
 MODULE_PATH = (
     Path(__file__).resolve().parents[1]
-    / ".claude/skills/mindmap-render/scripts/generate_mindmap.py"
+    / "scripts/generate_mindmap.py"
 )
 SPEC = importlib.util.spec_from_file_location("generate_mindmap", MODULE_PATH)
 MODULE = importlib.util.module_from_spec(SPEC)

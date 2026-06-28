@@ -54,14 +54,14 @@ Always tell the user that human review by a domain expert is recommended before 
 TOPIC="<topic>"
 SLUG=$(python3 -c "import re,hashlib,sys; t=sys.argv[1]; n=re.sub(r'[\\s_]+','-',re.sub(r'[^\\w\\s-]','',t.lower().strip())).strip('-')[:40].rstrip('-'); h=hashlib.sha1(t.encode()).hexdigest()[:8]; print(f'{n}-{h}')" "$TOPIC")
 TS=$(date +%Y-%m-%d_%H%M%S)
-RUN=output/cap-literature-survey/$SLUG/$TS/survey_paper
+RUN=output/literature-survey/$SLUG/$TS/survey_paper
 
 mkdir -p "$RUN/sections" "$RUN/figures"
-cp -r cap-literature-survey/templates/survey/. "$RUN/"
-ln -sfn "$TS" "output/cap-literature-survey/$SLUG/latest"
+cp -r literature-survey/templates/survey/. "$RUN/"
+ln -sfn "$TS" "output/literature-survey/$SLUG/latest"
 ```
 
-In commands below `$RUN` = `output/cap-literature-survey/<slug>/latest/survey_paper`.
+In commands below `$RUN` = `output/literature-survey/<slug>/latest/survey_paper`.
 
 ### Step 3 — Build the survey (REQUIRED — this is the whole job)
 
@@ -122,20 +122,20 @@ If a gate cannot honestly be met (e.g., the field is genuinely small), say so ex
 
 Report:
 
-1. `output/cap-literature-survey/<slug>/latest/survey_paper/main.pdf`
-2. `output/cap-literature-survey/<slug>/latest/survey_paper/` — complete LaTeX project (reproducible)
-3. `output/cap-literature-survey/<slug>/latest/literature_table.md` — classified literature table (write this alongside the bib build)
+1. `output/literature-survey/<slug>/latest/survey_paper/main.pdf`
+2. `output/literature-survey/<slug>/latest/survey_paper/` — complete LaTeX project (reproducible)
+3. `output/literature-survey/<slug>/latest/literature_table.md` — classified literature table (write this alongside the bib build)
 4. Stats per the report format in `references/05-quality-gate.md`.
 
-## Cross-cap data flow (path convention)
+## Cross-skill data flow (path convention)
 
-A downstream cap (e.g., `cap-paper-writer`) computing the same slug for the same topic will look here:
+A downstream skill (e.g., `paper-writer`) computing the same slug for the same topic will look here:
 
-- `output/cap-literature-survey/<slug>/latest/survey_paper/bibliography.bib` — bib starting point.
+- `output/literature-survey/<slug>/latest/survey_paper/bibliography.bib` — bib starting point.
 
 ## Important rules
 
-- **No LLM SDK in this cap.** No `import anthropic` / `import openai`. The cap is SKILL + references + LaTeX template only.
+- **No LLM SDK in this skill.** No `import anthropic` / `import openai`. The skill is SKILL.md + references + LaTeX template only.
 - **No fabricated citations.** Every BibTeX entry must trace back to a URL fetched this session. Real or weaker claim — never fake reference.
 - **Honest stop > padding.** If the field is too small for 60 real citations, say so to the user instead of inventing entries.
 - **Survey scope** is 6–20 pages with 60–150 references (100+ recommended). For longer or shorter formats, adjust scope explicitly with the user up front.

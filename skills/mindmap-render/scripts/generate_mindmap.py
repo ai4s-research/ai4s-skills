@@ -628,7 +628,7 @@ JS_HELPERS = """
   }
 
   function parseCubicPath(pathData) {
-    const match = /^M([-\d.]+),([-\d.]+)C([-\d.]+),([-\d.]+),([-\d.]+),([-\d.]+),([-\d.]+),([-\d.]+)$/.exec(pathData);
+    const match = /^M([-\\d.]+),([-\\d.]+)C([-\\d.]+),([-\\d.]+),([-\\d.]+),([-\\d.]+),([-\\d.]+),([-\\d.]+)$/.exec(pathData);
     if (!match) return null;
     return {
       sx: parseFloat(match[1]),

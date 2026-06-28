@@ -167,7 +167,7 @@ if len(n_seeds) < 3:
 When all gates pass:
 
 ```
-Experiment package ready: output/cap-experiment-suite/<slug>/
+Experiment package ready: output/experiment-suite/<slug>/
 
 Stats:
   Design:        912 words, 7 sections

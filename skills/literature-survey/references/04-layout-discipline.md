@@ -140,7 +140,7 @@ Do **not** put `\input{simulated}` inside `\title{}`.
 After any compile:
 
 ```bash
-cd output/cap-literature-survey/<slug>/survey_paper
+cd output/literature-survey/<slug>/survey_paper
 grep -E "Citation .* undefined" main.log    # must be empty
 grep -E "Reference .* undefined" main.log   # must be empty
 grep -E "Overfull|Underfull" main.log | head # should be near-empty

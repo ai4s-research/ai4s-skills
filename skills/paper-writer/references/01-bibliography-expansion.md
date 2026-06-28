@@ -31,10 +31,10 @@ OpenReview uses `https://openreview.net/forum?id=<id>`. NeurIPS proceedings: `ht
 
 ### 1. Optionally seed from a prior lit-survey run
 
-If `cap-literature-survey` has already produced a bib for the same topic (same slug), copy it as a starting point:
+If the `literature-survey` skill has already produced a bib for the same topic (same slug), copy it as a starting point:
 
 ```bash
-cp output/cap-literature-survey/<slug>/latest/survey_paper/bibliography.bib "$RUN/bibliography.bib"
+cp output/literature-survey/<slug>/latest/survey_paper/bibliography.bib "$RUN/bibliography.bib"
 ```
 
 Otherwise start with an empty `$RUN/bibliography.bib`. Either way, you build the bib up to 200+ entries below before drafting begins.
@@ -70,7 +70,7 @@ For each query in the plan:
    - `arxiv_id` or `doi` — at least one stable identifier
 4. **Append** the BibTeX entry to `output/<slug>/latest/paper/bibliography.bib` immediately (atomic Write/Edit), and add the query string to `output/<slug>/latest/paper/.bib_progress.txt`.
 
-WebFetch is rate-limited by the platform; pace queries to avoid throttling. For arXiv specifically, prefer the export.arxiv.org Atom endpoint when bulk-loading 10+ papers from one query — one WebFetch returns multiple entries.
+WebFetch is rate-limited by the agent environment; pace queries to avoid throttling. For arXiv specifically, prefer the export.arxiv.org Atom endpoint when bulk-loading 10+ papers from one query — one WebFetch returns multiple entries.
 
 ### 4. BibTeX entry format
 

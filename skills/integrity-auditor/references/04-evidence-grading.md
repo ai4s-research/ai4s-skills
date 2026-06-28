@@ -70,7 +70,7 @@ Do not add up findings to escalate severity. A paper with twelve Level 1 finding
 
 Every finding, at every level, must include:
 
-1. **Paper identifier** — DOI / arXiv ID / in-platform slug.
+1. **Paper identifier** — DOI / arXiv ID / local paper-writer slug.
 2. **Location** — section + paragraph + page (for body); figure id + panel + sub-region (for images); table id + cell (for tables).
 3. **Source artefact pointer** — path in `$RUN/` to the extracted material (panel PNG, line in `paper.txt`, JSON path in `results.json`).
 4. **What was observed** — concrete description of the anomaly. Pixel coordinates, line numbers, exact numbers.

@@ -63,7 +63,7 @@ The `provenance` block is non-negotiable.
 ```json
 "provenance": {
   "mode": "simulated",
-  "source": "cap-experiment-suite/scripts/simulator.py",
+  "source": "experiment-suite/scripts/simulator.py",
   "timestamp": "2026-05-09T14:30:00Z",
   "note": "Numbers are randomly generated to mimic plausible value ranges; not measured."
 }

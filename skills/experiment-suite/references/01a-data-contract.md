@@ -3,7 +3,7 @@
 Use this file whenever the run is intended to support a measured experiment, or when the agent
 searches for and binds a dataset on the fly.
 
-`cap-experiment-suite` is a skill system, not a fixed benchmark repository. That means `data.py`
+`experiment-suite` is a skill system, not a fixed benchmark repository. That means `data.py`
 and `config.yaml` should be generated for the current run, not frozen globally. The price of this
 flexibility is that the run can become impossible to audit unless the dataset choice is written
 down explicitly. `data_contract.md` is the lightweight fix.

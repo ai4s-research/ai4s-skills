@@ -80,7 +80,7 @@ For each experimental method, check that the paper supplies:
 
 - antibody catalogue number / clone (for biology)
 - exact model weights / random seeds / hyperparameters (for ML)
-- dataset version + access path (for data analysis) — for in-platform slugs, cross-check against `output/cap-experiment-suite/<slug>/latest/data_contract.md`
+- dataset version + access path (for data analysis) — for a local paper-writer slug, cross-check against `output/experiment-suite/<slug>/latest/data_contract.md`
 - statistical test, software, and version used for P values
 - exclusion criteria (which samples were removed and why)
 
@@ -130,9 +130,9 @@ Level 3 — needs additional experiments or raw data to disambiguate causation f
 - Method reproducibility: <yes / partial / lists what is missing>
 ```
 
-## In-platform slug audits get extra leverage
+## Local paper-writer slug audits get extra leverage
 
-When `output/cap-experiment-suite/<slug>/latest/` is available:
+When `output/experiment-suite/<slug>/latest/` is available:
 
 - `results.json` has per-seed entries — verify the paper's claimed `n_seeds` matches.
 - `data_contract.md` has split protocol — verify the paper's claimed split matches.

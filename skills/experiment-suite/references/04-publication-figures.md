@@ -13,7 +13,7 @@ Before plotting, open `references/04a-figure-contract.md` and define the figure 
 
 ## File layout
 
-All figures live under `output/cap-experiment-suite/<slug>/figures/` with a `make_fig_NN_<slug>.py` script alongside the rendered `.pdf`. The script is the source of truth — re-running the script reproduces the figure. Update `manifest.json` when adding figures.
+All figures live under `output/experiment-suite/<slug>/figures/` with a `make_fig_NN_<slug>.py` script alongside the rendered `.pdf`. The script is the source of truth — re-running the script reproduces the figure. Update `manifest.json` when adding figures.
 
 Naming: `fig_<NN>_<slug>.pdf` and `make_fig_<NN>_<slug>.py`.
 

@@ -53,7 +53,7 @@ The sweeper outputs two flag types:
 
 Hits tagged `(entity-overlap)` carry the highest confidence; the bilingual map enables cross-language matching for Chinese / English papers (Chinese row labels vs English transliterations in supplementary text).
 
-Empirical baseline: Hu et al. 2026 Nature paper (10.1038/s41586-026-10570-z) `MOESM1` Supplementary Note 5 + Table 7 + `MOESM2` reviewer-response Table all reported per-county wind generation as "TWh" while the source data MOESM3 `wind_generation_GWh` column was in GWh. Tongyu County is the canonical example: text "exceeding 2,900 TWh yr⁻¹", XLSX value 2916.07 GWh, implied 1000× unit error. SKILL v1.5 sweepers did not catch this class; v1.6 `magnitude_consistency.py` catches it directly (top hit with entity-overlap tag).
+Empirical baseline: Hu et al. 2026 Nature paper (10.1038/s41586-026-10570-z) `MOESM1` Supplementary Note 5 + Table 7 + `MOESM2` reviewer-response Table all reported per-county wind generation as "TWh" while the source data MOESM3 `wind_generation_GWh` column was in GWh. Tongyu County is the canonical example: text "exceeding 2,900 TWh yr⁻¹", XLSX value 2916.07 GWh, implied 1000× unit error. The skill's v1.5 sweepers did not catch this class; v1.6 `magnitude_consistency.py` catches it directly (top hit with entity-overlap tag).
 
 Anti-pattern: do not pass the script all numbers (`--min-value 1`) — it will produce voluminous noise from coincidental 10× pairs. Use `--min-value 100` and `--top-k 1` for clean reports.
 
@@ -77,7 +77,7 @@ python forensics_tools/decimal_match.py \
     --digits 2 --min-class 8 --min-distinct 6 --ratio 3.0 --cross-sheet
 ```
 
-Empirical baseline: the Kang Tiebang RAB22A osteosarcoma paper (10.1038/s41556-020-0522-z) whistleblower report identified "64 data points in ED Fig 6B and 6C have identical last two decimals". SKILL v1.4 numerical sweepers did not catch this class; the v1.5 `decimal_match.py` is designed to catch it. Threshold tuning is paper-dependent — for confirmation, try both `--digits 2` (last 2 decimals match) and `--digits 3` (last 3 decimals match, narrower), and both strict (default) and `--lax` (1dp values displayed at 2dp).
+Empirical baseline: the Kang Tiebang RAB22A osteosarcoma paper (10.1038/s41556-020-0522-z) whistleblower report identified "64 data points in ED Fig 6B and 6C have identical last two decimals". The skill's v1.4 numerical sweepers did not catch this class; the v1.5 `decimal_match.py` is designed to catch it. Threshold tuning is paper-dependent — for confirmation, try both `--digits 2` (last 2 decimals match) and `--digits 3` (last 3 decimals match, narrower), and both strict (default) and `--lax` (1dp values displayed at 2dp).
 
 The check is structurally orthogonal to:
 - Check 1.1 (deterministic column-pair): catches within-row additive `A − B = const` relationships
@@ -201,7 +201,7 @@ Each mismatch becomes one `findings/numerical/<id>.md`.
 
 ### Check 2 — Recompute from source data
 
-When source data (tables, .csv supplements, raw `results.json` for in-platform slugs) is available, recompute every headline statistic and compare:
+When source data (tables, .csv supplements, raw `results.json` for a local paper-writer slug) is available, recompute every headline statistic and compare:
 
 - mean: `sum(values) / n`
 - SD: `sqrt(sum((x - mean)^2) / (n - 1))`
@@ -210,7 +210,7 @@ When source data (tables, .csv supplements, raw `results.json` for in-platform s
 - effect size: by the specific formula (Cohen's d, Hedges' g, η²)
 - P value: rerun the stated test (t-test / Mann-Whitney / ANOVA / χ²) — at minimum sanity-check the magnitude
 
-For in-platform audits, every metric reported in the paper must trace back to `output/cap-experiment-suite/<slug>/latest/results.json`. Specifically check that:
+For a local paper-writer slug audit, every metric reported in the paper must trace back to `output/experiment-suite/<slug>/latest/results.json`. Specifically check that:
 
 - the paper's headline numbers appear in `summary.<method>.<metric>.{mean,std}` or in `runs[*]`
 - the paper's claimed `n_seeds` matches `len(seeds)` in the results file
@@ -294,7 +294,7 @@ Empirical baseline (Wang Ping 2025 Nature paper):
 - Mode A flagged 5 sheets: Fig.4 / ED Fig.2 / ED Fig.6 / ED Fig.8 / ED Fig.10, dominant-non-zero fractions 22–35%.
 - Mode B flagged 3 tumor-weight columns: `Fig.5 col 3` (88% zero at 2dp), `ED Fig.10 col 4` (69%), `ED Fig.10 col 8` (86%).
 
-The Mode B finding (tumor-weight mixed precision) corresponds to the official institutional finding *"1 figure involved a mouse weight with the last digit being '0' and recording methods that were non-standard."* The v1 SKILL missed this because Mode B was not implemented; Mode A alone could not detect it (the rstrip step removes precisely the artefact Mode B is looking for).
+The Mode B finding (tumor-weight mixed precision) corresponds to the official institutional finding *"1 figure involved a mouse weight with the last digit being '0' and recording methods that were non-standard."* The v1 skill missed this because Mode B was not implemented; Mode A alone could not detect it (the rstrip step removes precisely the artefact Mode B is looking for).
 
 ### Check 3.2 — GRIM and decimal-trail integer-mean check
 
@@ -443,4 +443,4 @@ If a full pass over all numbers turns up no inconsistencies, write `$RUN/finding
 - ✗ Treating Benford as a universal test. It applies narrowly.
 - ✗ Calling rounding mismatches "fabrication". Rounding bugs are Level 1.
 - ✗ Recomputing without writing down the formula and the inputs.
-- ✗ Ignoring the source data when it exists. If `cap-experiment-suite/.../results.json` is in front of you, use it.
+- ✗ Ignoring the source data when it exists. If `experiment-suite/.../results.json` is in front of you, use it.

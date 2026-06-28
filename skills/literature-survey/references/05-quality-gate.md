@@ -11,7 +11,7 @@ The gate is bright-line. Do not soften the targets to ship.
 ### G1 · PDF compiles cleanly
 
 ```bash
-cd output/cap-literature-survey/<slug>/survey_paper
+cd output/literature-survey/<slug>/survey_paper
 pdflatex -interaction=nonstopmode main.tex >/dev/null 2>&1
 bibtex main >/dev/null 2>&1
 pdflatex -interaction=nonstopmode main.tex >/dev/null 2>&1
@@ -267,7 +267,7 @@ Unattended runs can't rely on a human opening the PDF, so this is now two layers
 When all gates pass:
 
 ```
-Survey ready: output/cap-literature-survey/<slug>/survey_paper/main.pdf
+Survey ready: output/literature-survey/<slug>/survey_paper/main.pdf
 
 Stats:
   Pages:        9

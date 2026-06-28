@@ -17,7 +17,7 @@ If the conversation context fills, the agent crashes, or the user pivots, **the 
 ### Invariant 2 — Progress is observable via filesystem, not memory
 
 ```bash
-cd output/cap-literature-survey/<slug>/survey_paper
+cd output/literature-survey/<slug>/survey_paper
 grep -c "^@" bibliography.bib                                # bib entries so far
 ls figures/*.pdf | wc -l                                     # figures so far
 for f in sections/*.tex; do
@@ -100,7 +100,7 @@ For each figure (6–10 total):
 ## Recovery — what to do when a session resumes mid-task
 
 ```bash
-cd output/cap-literature-survey/<slug>/survey_paper
+cd output/literature-survey/<slug>/survey_paper
 
 grep -c "^@" bibliography.bib                       # bib progress
 cat .bib_progress.txt 2>/dev/null | wc -l           # queries executed

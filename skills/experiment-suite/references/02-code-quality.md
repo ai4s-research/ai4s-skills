@@ -205,7 +205,7 @@ A real README that:
 Before declaring the code skeleton complete:
 
 ```bash
-cd output/cap-experiment-suite/<slug>/experiment
+cd output/experiment-suite/<slug>/experiment
 python -c "import importlib; m = importlib.import_module('model'); print(m.__name__)"
 python -c "import importlib; m = importlib.import_module('data'); print(m.__name__)"
 python -c "import importlib; m = importlib.import_module('train'); print(m.__name__)"

@@ -19,7 +19,7 @@ What it does:
 Why this exists (empirical baseline):
     Kang Tiebang RAB22A osteosarcoma paper (10.1038/s41556-020-0522-z) had a
     whistleblower-reported pattern: "64 data points in ED Fig 6B and 6C have
-    identical last two decimals". SKILL v1.4 had no sweeper for this class.
+    identical last two decimals". The skill's v1.4 had no sweeper for this class.
     The deterministic-column-pair sweep (Check 1.1) detects within-row
     additive relationships; the row-duplicate sweep (Check 1.2) detects
     multi-numeric row copies; this sweeper detects something orthogonal:

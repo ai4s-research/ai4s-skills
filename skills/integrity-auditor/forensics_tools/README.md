@@ -1,6 +1,6 @@
 # forensics_tools/
 
-Deterministic, single-purpose utility scripts used by the integrity-auditor SKILL.
+Deterministic, single-purpose utility scripts used by the integrity-auditor skill.
 
 | Script | Purpose | Deps |
 |---|---|---|
@@ -40,7 +40,7 @@ python forensics_tools/channel_check.py "$RUN/sub_cells/fig2f_minusVal/"*.png \
 
 Empirical: on the Wang Ping 2025 Nature audit, 5 main figures split into 56 panels at the default thresholds (panels ranging 175 px × 257 px to 1021 px × 500 px). Whole-figure dHash min was 91 across the 5 figures (no useful signal); after panel split the min cross-panel dHash dropped to 55 — still no admitted-issue dups, but only because (a) the admitted Fig 2f issue is a within-panel label swap, not a cross-panel duplicate, and (b) Extended Data figures sit behind the article paywall. Both limitations are explicitly recorded as audit boundaries.
 
-## Design rules (matches the platform anti-pattern policy)
+## Design rules (matches the skill's anti-pattern policy)
 
 1. **No LLM SDK** — never `import anthropic` / `import openai` here.
 2. **No "skeleton → enrich" orchestration** — these are pure utilities, the agent drives the workflow.
@@ -52,7 +52,7 @@ Empirical: on the Wang Ping 2025 Nature audit, 5 main figures split into 56 pane
 From `references/01-image-evidence.md` Check 1/2/3, when the audit needs pixel-level pairwise comparison across figures / panels. Typical invocation from inside a run directory:
 
 ```bash
-python /path/to/cap-integrity-auditor/forensics_tools/image_dup.py \
+python /path/to/integrity-auditor/forensics_tools/image_dup.py \
     figures_hires/*.png panels_correction/*.png \
     > findings/image/dhash_pairs.txt
 ```

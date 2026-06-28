@@ -57,7 +57,7 @@ grep -oE 'https?://static-content\.springer\.com/esm/art%3A10\.[0-9]+%2F[^"]+MOE
 
 The correction's supplementary is independent of the parent article's MOESMs — these go through a separate DOI namespace (e.g., parent article `10.1038/s41586-024-08248-5` has supplementary numbered `41586_2024_8248_MOESM*`, while its correction `10.1038/s41586-025-09409-w` has its own `41586_2025_9409_MOESM*`).
 
-Empirical baseline (Wang Ping 2025 Nature): the parent article's main figures, served by the CDN, are post-correction. The pre-correction originals are exclusively in the **correction's** `MOESM1_ESM.pdf` (a 5-page PDF labelled "Original Fig. 2, Extended Data Figs. 7, 10"). Without this file, the SKILL's image-track tools have nothing to bite on. **With this file**, `channel_check.py` independently reproduced the DAPI/Merge label-swap finding the authors had admitted — see `output/cap-integrity-auditor/wang-ping-hdac6-valine-10-1038-s41586-024-08248-5/latest/findings/image/fig2f-original-dapi-merge-swap.md`.
+Empirical baseline (Wang Ping 2025 Nature): the parent article's main figures, served by the CDN, are post-correction. The pre-correction originals are exclusively in the **correction's** `MOESM1_ESM.pdf` (a 5-page PDF labelled "Original Fig. 2, Extended Data Figs. 7, 10"). Without this file, the skill's image-track tools have nothing to bite on. **With this file**, `channel_check.py` independently reproduced the DAPI/Merge label-swap finding the authors had admitted — see `output/integrity-auditor/wang-ping-hdac6-valine-10-1038-s41586-024-08248-5/latest/findings/image/fig2f-original-dapi-merge-swap.md`.
 
 ## Other publishers (rough guide)
 
@@ -73,7 +73,7 @@ Empirical baseline (Wang Ping 2025 Nature): the parent article's main figures, s
 
 In all cases, the right pattern is: fetch the landing HTML; grep for `supp`, `MEDIA`, `MOESM`, `mmc`, `pdf`, `xlsx`, `Fig*_HTML` strings; collect every distinct CDN URL exposed; try downloading each.
 
-## What this means for SKILL Step 2
+## What this means for the skill's Step 2
 
 In `SKILL.md` Step 2 ("Gather materials"), the agent should attempt acquisition in this order:
 

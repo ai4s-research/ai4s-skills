@@ -37,13 +37,13 @@ Confirm with the user:
 DIRECTION="<direction>"
 SLUG=$(python3 -c "import re,hashlib,sys; t=sys.argv[1]; n=re.sub(r'[\\s_]+','-',re.sub(r'[^\\w\\s-]','',t.lower().strip())).strip('-')[:40].rstrip('-'); h=hashlib.sha1(t.encode()).hexdigest()[:8]; print(f'{n}-{h}')" "$DIRECTION")
 TS=$(date +%Y-%m-%d_%H%M%S)
-RUN=output/cap-research-explorer/$SLUG/$TS
+RUN=output/research-explorer/$SLUG/$TS
 
 mkdir -p "$RUN"
-ln -sfn "$TS" "output/cap-research-explorer/$SLUG/latest"
+ln -sfn "$TS" "output/research-explorer/$SLUG/latest"
 ```
 
-In commands below `$RUN` = `output/cap-research-explorer/<slug>/latest`.
+In commands below `$RUN` = `output/research-explorer/<slug>/latest`.
 
 ### Step 3 — Multi-dimensional exploration
 
@@ -90,7 +90,7 @@ A hierarchical Markdown outline of the topic space:
 ### Topic B.1
 ```
 
-This file is consumable by `cap-mindmap-render` to produce a visual mindmap.
+This file is consumable by the `mindmap-render` skill to produce a visual mindmap.
 
 #### 4.3 `literature_pre_survey.md`
 
@@ -98,25 +98,25 @@ A pre-survey table of **20–30 representative works** discovered above, with co
 
 ### Step 5 — Optional handoff
 
-If the user picks a topic, suggest the next cap:
+If the user picks a topic, suggest the next skill:
 
-- For a paper: `cap-paper-writer` (using the chosen topic).
-- For a survey: `cap-literature-survey`.
-- For an experiment package: `cap-experiment-suite`.
-- For a visual topic map: `cap-mindmap-render` consuming `topic_matrix.md`.
+- For a paper: the `paper-writer` skill (using the chosen topic).
+- For a survey: the `literature-survey` skill.
+- For an experiment package: the `experiment-suite` skill.
+- For a visual topic map: the `mindmap-render` skill consuming `topic_matrix.md`.
 
-## Cross-cap data flow (path convention)
+## Cross-skill data flow (path convention)
 
-A downstream cap can locate this exploration via the slug:
+A downstream skill can locate this exploration via the slug:
 
-- `output/cap-research-explorer/<slug>/latest/topic_matrix.md`
-- `output/cap-research-explorer/<slug>/latest/literature_pre_survey.md`
+- `output/research-explorer/<slug>/latest/topic_matrix.md`
+- `output/research-explorer/<slug>/latest/literature_pre_survey.md`
 
-If the user picks one topic from the matrix, downstream caps compute their own slug from the **topic** (not the original direction), so the slug paths diverge from this cap onward — which is correct.
+If the user picks one topic from the matrix, downstream skills compute their own slug from the **topic** (not the original direction), so the slug paths diverge from this skill onward — which is correct.
 
 ## Important rules
 
-- **No LLM SDK in this cap.** Just a procedure + this SKILL.md.
+- **No LLM SDK in this skill.** Just a procedure + this `SKILL.md`.
 - **Candidates are suggestions, not guaranteed novel** — the user must verify originality before committing.
 - **Feasibility scores are heuristic** — flag uncertainty explicitly when relevant.
 - Every literature entry must have a URL fetched in this session; no memory-only entries.

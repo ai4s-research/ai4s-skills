@@ -20,7 +20,7 @@ Practical reading rules:
 
 ### Check 2 — Cross-figure duplicates
 
-Same as Check 1, but compare panels across different figures. Common findings include "loading control band in Figure 2 reused as loading control in Figure 5". For an in-platform slug audit, also compare against the `output/cap-experiment-suite/<slug>/latest/figures/` directory — the paper should not contain figures that are not in the experiment-suite manifest.
+Same as Check 1, but compare panels across different figures. Common findings include "loading control band in Figure 2 reused as loading control in Figure 5". For a local paper-writer slug audit, also compare against the `output/experiment-suite/<slug>/latest/figures/` directory — the paper should not contain figures that are not in the experiment-suite manifest.
 
 ### Check 3 — Transformation reuse
 
@@ -34,10 +34,10 @@ Some duplicates are not direct copies. They are rotated, flipped, scaled, bright
 
 When a pixel-level dup is suspected, sketch the alignment in the finding file: "Figure 2A upper-left 200×80 region matches Figure 5C lower-right 200×80 region after horizontal flip".
 
-For perceptual hashing, use `forensics_tools/image_dup.py` (sits at the cap root). Invocation from inside a run directory:
+For perceptual hashing, use `forensics_tools/image_dup.py` (sits at the skill root). Invocation from inside a run directory:
 
 ```bash
-python /path/to/cap-integrity-auditor/forensics_tools/image_dup.py \
+python /path/to/integrity-auditor/forensics_tools/image_dup.py \
     figures_hires/*.png panels_correction/*.png panels/*.png \
     > findings/image/dhash_pairs.txt
 ```
@@ -54,7 +54,7 @@ python /path/to/forensics_tools/image_dup.py "$RUN"/panels/*.png > "$RUN/finding
 For **transformed duplicates** (rotation / flip / crop / brightness change) that survive phash distance > 30, use `forensics_tools/image_dup_orb.py`. ORB feature matching is rotation- and crop-invariant by design, and the script's mirror-augmentation pass also catches flipped duplicates:
 
 ```bash
-python /path/to/cap-integrity-auditor/forensics_tools/image_dup_orb.py \
+python /path/to/integrity-auditor/forensics_tools/image_dup_orb.py \
     "$RUN"/panels/*.png \
     --strong 30 --weak 12 \
     > "$RUN/findings/image/orb_pairs.txt"
@@ -153,11 +153,11 @@ If a full pass over all panels turns up nothing, write `$RUN/findings/image/_cle
 
 Absence is a result. Document it.
 
-## What an in-platform slug audit gets for free
+## What a local paper-writer slug audit gets for free
 
-When the input is a `cap-paper-writer` slug, the auditor can cross-check:
+When the input is a local paper-writer slug, the auditor can cross-check:
 
-- Every figure cited in the paper has a corresponding entry in `output/cap-experiment-suite/<slug>/latest/figures/manifest.json`. A figure in the paper that is **not** in the manifest is a Level 2 finding by itself ("figure has no production trail in this platform").
+- Every figure cited in the paper has a corresponding entry in `output/experiment-suite/<slug>/latest/figures/manifest.json`. A figure in the paper that is **not** in the manifest is a Level 2 finding by itself ("figure has no production trail in the paper-writer run").
 - The `manifest.json` stores basenames. If the paper's `\includegraphics{figures/X}` references a basename not in the manifest, flag it.
 
 ## Heuristics worth knowing

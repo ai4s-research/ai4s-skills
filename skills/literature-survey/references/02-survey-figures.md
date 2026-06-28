@@ -100,7 +100,7 @@ The quality gate (`05-quality-gate.md` G1 + S5) treats residual `Overfull \hbox`
 
 ## File layout
 
-All figures land under `output/cap-literature-survey/<slug>/survey_paper/figures/`. Use vector PDF for LaTeX (`.pdf`); keep a PNG sibling only for previewing. TikZ figures live inline inside the relevant `sections/*.tex` (no separate file needed). matplotlib / seaborn figures get a `make_fig_NN_<slug>.py` script alongside the PDF.
+All figures land under `output/literature-survey/<slug>/survey_paper/figures/`. Use vector PDF for LaTeX (`.pdf`); keep a PNG sibling only for previewing. TikZ figures live inline inside the relevant `sections/*.tex` (no separate file needed). matplotlib / seaborn figures get a `make_fig_NN_<slug>.py` script alongside the PDF.
 
 Naming: `fig_<NN>_<short-slug>.pdf`. Numbers correspond to citation order.
 
@@ -276,7 +276,7 @@ plt.close(fig)
 
 ## Family 4 — Architecture / mechanism diagrams (TikZ)
 
-When a sub-area shares a common architectural pattern (e.g., "all decomposition Transformers do X then Y"), a single TikZ figure illustrating the canonical pipeline saves several pages of prose. See `cap-paper-writer/.claude/skills/paper-writer/references/02-figures-publication-grade.md` § Family 1 for the full template.
+When a sub-area shares a common architectural pattern (e.g., "all decomposition Transformers do X then Y"), a single TikZ figure illustrating the canonical pipeline saves several pages of prose. See the `paper-writer` skill's `references/02-figures-publication-grade.md` § Family 1 for the full template.
 
 For a survey, prefer **abstracted** architectural diagrams that show the pattern shared by a family of methods, not one specific method.
 
@@ -297,7 +297,7 @@ These earn their place when they reveal something the prose can't. A "papers per
 
 ## No default figures
 
-This cap has no default figure (unlike experiment-suite). All figures are agent-generated.
+This skill has no default figure (unlike experiment-suite). All figures are agent-generated.
 
 ## Quick checklist
 

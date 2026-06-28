@@ -1,13 +1,13 @@
 ---
 name: experiment-suite
-description: Use when the user has a research question and needs a complete experiment package — design document, runnable code, results (measured or simulated with honest provenance), publication-grade figures, structured report. Single-stage, no Python runtime in the cap.
+description: Use when the user has a research question and needs a complete experiment package — design document, runnable code, results (measured or simulated with honest provenance), publication-grade figures, structured report. Single-stage, no Python runtime.
 ---
 
 # Experiment Suite
 
 ## Overview
 
-End-to-end experiment package builder. **Single stage, full quality from the start.** The agent (Claude Code / Cursor / Aider / Codex / …) writes everything directly using its own tools (Write, Bash, WebFetch, …). This cap contains procedure + reference playbooks + figure-example scripts — no Python runtime, no LLM SDK.
+End-to-end experiment package builder. **Single stage, full quality from the start.** The agent (Claude Code / Cursor / Aider / Codex / …) writes everything directly using its own tools (Write, Bash, WebFetch, …). This skill contains procedure + reference playbooks + figure-example scripts — no Python runtime, no LLM SDK.
 
 The substantive work is decomposed into reference playbooks under `references/`:
 
@@ -63,13 +63,13 @@ If the user has data and time, push toward measured mode. If not, simulated is a
 QUESTION="<research_question>"
 SLUG=$(python3 -c "import re,hashlib,sys; t=sys.argv[1]; n=re.sub(r'[\\s_]+','-',re.sub(r'[^\\w\\s-]','',t.lower().strip())).strip('-')[:40].rstrip('-'); h=hashlib.sha1(t.encode()).hexdigest()[:8]; print(f'{n}-{h}')" "$QUESTION")
 TS=$(date +%Y-%m-%d_%H%M%S)
-RUN=output/cap-experiment-suite/$SLUG/$TS
+RUN=output/experiment-suite/$SLUG/$TS
 
 mkdir -p "$RUN/experiment" "$RUN/figures"
-ln -sfn "$TS" "output/cap-experiment-suite/$SLUG/latest"
+ln -sfn "$TS" "output/experiment-suite/$SLUG/latest"
 ```
 
-In commands below `$RUN` = `output/cap-experiment-suite/<slug>/latest`.
+In commands below `$RUN` = `output/experiment-suite/<slug>/latest`.
 
 The agent will create five top-level files inside `$RUN/`:
 
@@ -133,25 +133,25 @@ If simulated, watermark the figures or always note "simulated" in their captions
 
 Report:
 
-1. `output/cap-experiment-suite/<slug>/latest/experiment_design.md`
-2. `output/cap-experiment-suite/<slug>/latest/experiment/` — runnable code package.
-3. `output/cap-experiment-suite/<slug>/latest/results.json` — with provenance.
-4. `output/cap-experiment-suite/<slug>/latest/figures/` — publication-grade charts + `manifest.json`.
-5. `output/cap-experiment-suite/<slug>/latest/experiment_report.md` — structured report.
+1. `output/experiment-suite/<slug>/latest/experiment_design.md`
+2. `output/experiment-suite/<slug>/latest/experiment/` — runnable code package.
+3. `output/experiment-suite/<slug>/latest/results.json` — with provenance.
+4. `output/experiment-suite/<slug>/latest/figures/` — publication-grade charts + `manifest.json`.
+5. `output/experiment-suite/<slug>/latest/experiment_report.md` — structured report.
 6. Stats per the report format in `references/06-quality-gate.md`.
 
-## Cross-cap data flow (path convention)
+## Cross-skill data flow (path convention)
 
-`cap-paper-writer` computing the same slug for the same topic will look here:
+The `paper-writer` skill computing the same slug for the same topic will look here:
 
-- `output/cap-experiment-suite/<slug>/latest/results.json` — source of the numbers and the `"simulated"` flag (drives the disclosure clause in the paper).
-- `output/cap-experiment-suite/<slug>/latest/figures/*.pdf` (+ `manifest.json`) — figures to reuse rather than redraw.
+- `output/experiment-suite/<slug>/latest/results.json` — source of the numbers and the `"simulated"` flag (drives the disclosure clause in the paper).
+- `output/experiment-suite/<slug>/latest/figures/*.pdf` (+ `manifest.json`) — figures to reuse rather than redraw.
 
 Always store **basenames** in `manifest.json`. Absolute paths in the manifest break paper-writer's `\includegraphics{figures/<basename>}`.
 
 ## Important rules
 
-- **No LLM SDK in this cap.** No `import anthropic` / `import openai`. The cap is SKILL + references + figure examples only.
+- **No LLM SDK in this skill.** No `import anthropic` / `import openai`. The skill is SKILL.md + references + figure examples only.
 - **Simulated results must always remain visibly labelled** — in `results.json` (`"simulated": true`), in figure captions, in the report's top-of-page disclosure, and in any downstream paper's `\thanks` footnote.
 - **Never present simulated results as measured.** When in doubt, treat as simulated and disclose.
 - The runnable code is a starting point, not a SOTA reproduction. Be honest about its scope in `experiment/README.md`.

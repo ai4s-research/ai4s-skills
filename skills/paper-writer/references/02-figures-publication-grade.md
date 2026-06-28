@@ -2,7 +2,7 @@
 
 ## Why this exists
 
-Real research papers carry 4–8 figures spanning multiple types: an architecture diagram, several quantitative comparisons, sometimes a heatmap, sometimes a multi-panel breakdown. If `cap-experiment-suite` has already produced baseline figures for the same topic, reuse them by symlink or copy; otherwise generate them here. This reference explains how to produce each family at publication quality.
+Real research papers carry 4–8 figures spanning multiple types: an architecture diagram, several quantitative comparisons, sometimes a heatmap, sometimes a multi-panel breakdown. If the `experiment-suite` skill has already produced baseline figures for the same topic, reuse them by symlink or copy; otherwise generate them here. This reference explains how to produce each family at publication quality.
 
 **Hard targets:**
 - ≥ 1 architecture / pipeline diagram (TikZ recommended for vector quality)
@@ -26,7 +26,7 @@ Build each figure by deciding *what claim the reader must see*, then *what data-
 
 ## File layout
 
-All figures land in `$RUN/figures/` (i.e., `output/cap-paper-writer/<slug>/latest/paper/figures/`). Use vector PDF for LaTeX (`.pdf`) and keep a PNG sibling only if you also want to preview cheaply. If `output/cap-experiment-suite/<slug>/latest/figures/manifest.json` exists, it's a useful index of upstream artefacts but not authoritative — what LaTeX sees is `\includegraphics{figures/<basename>}`, and the basename must exist locally inside `$RUN/figures/`.
+All figures land in `$RUN/figures/` (i.e., `output/paper-writer/<slug>/latest/paper/figures/`). Use vector PDF for LaTeX (`.pdf`) and keep a PNG sibling only if you also want to preview cheaply. If `output/experiment-suite/<slug>/latest/figures/manifest.json` exists, it's a useful index of upstream artefacts but not authoritative — what LaTeX sees is `\includegraphics{figures/<basename>}`, and the basename must exist locally inside `$RUN/figures/`.
 
 Naming: `fig_<NN>_<short-slug>.pdf`. Numbers correspond to citation order in the paper.
 
@@ -299,7 +299,7 @@ This requires `pip install plotly kaleido`. Use sparingly — sankey is fashiona
 
 ## Reusing an experiment-suite baseline figure
 
-If `output/cap-experiment-suite/<slug>/latest/figures/fig_01_comparison_<metric>.pdf` exists, it's a starting point but the styling is usually crude (mixed font sizes, cramped layout, "SIMULATED DATA" watermark baked into the figure). Two acceptable options:
+If `output/experiment-suite/<slug>/latest/figures/fig_01_comparison_<metric>.pdf` exists, it's a starting point but the styling is usually crude (mixed font sizes, cramped layout, "SIMULATED DATA" watermark baked into the figure). Two acceptable options:
 
 - **Regenerate** with the matplotlib publication style above (preferred — keep the simulated marker in the title `\thanks` instead of baked into the figure pixels), OR
 - **Reuse** it as `fig_01_baseline.pdf` for transparency, and add 3–6 better-styled figures alongside.

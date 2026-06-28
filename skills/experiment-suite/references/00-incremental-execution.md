@@ -13,7 +13,7 @@ Each artefact is written to its file the moment it's drafted. The data binding g
 ### Invariant 2 — Progress is observable on disk
 
 ```bash
-cd output/cap-experiment-suite/<slug>
+cd output/experiment-suite/<slug>
 
 wc -w experiment_design.md                              # design length
 test -s data_contract.md && echo "data contract present"
@@ -43,7 +43,7 @@ A turn that tries to write all the code in one shot truncates. A turn that tries
 ## Recovery — when a session resumes mid-task
 
 ```bash
-cd output/cap-experiment-suite/<slug>
+cd output/experiment-suite/<slug>
 
 # Design done?
 wc -w experiment_design.md       # < 200 words means stub; > 600 means real

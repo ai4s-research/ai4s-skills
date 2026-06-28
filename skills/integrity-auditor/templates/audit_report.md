@@ -9,24 +9,24 @@
 
 - Title:
 - Authors:
-- Identifier: DOI / arXiv ID / in-platform slug
+- Identifier: DOI / arXiv ID / local paper-writer slug
 - Version / date:
 - Source artefact path: `<path to PDF in the run dir>`
 - Input mode: PDF | DOI | slug
 
 ## 2 · Materials consulted
 
-List every file the audit read. For slug audits, include the platform-side raw artefacts.
+List every file the audit read. For slug audits, include the paper-writer-side raw artefacts.
 
 - `paper.txt` (extracted text)
 - `panels/*` (extracted figure panels — count: <N>)
 - Supplementary materials: <list or "not available">
 - Source data: <list or "not available">
 - Slug-linked artefacts:
-  - `output/cap-experiment-suite/<slug>/latest/results.json`
-  - `output/cap-experiment-suite/<slug>/latest/data_contract.md`
-  - `output/cap-experiment-suite/<slug>/latest/figures/manifest.json`
-  - `output/cap-paper-writer/<slug>/latest/paper/bibliography.bib`
+  - `output/experiment-suite/<slug>/latest/results.json`
+  - `output/experiment-suite/<slug>/latest/data_contract.md`
+  - `output/experiment-suite/<slug>/latest/figures/manifest.json`
+  - `output/paper-writer/<slug>/latest/paper/bibliography.bib`
 - External references checked: <list or "none">
 
 ## 3 · Methodology summary
@@ -34,7 +34,7 @@ List every file the audit read. For slug audits, include the platform-side raw a
 For each of the three tracks, state in one line what the auditor did and what was not possible.
 
 - **Image track**: <e.g., panels extracted from PDF via `pdfimages`, within- and cross-figure visual inspection, transformation alignment checks (flip / rotate / crop); no perceptual-hash tooling used>
-- **Numerical track**: <e.g., every numeric claim in `paper.txt` greppable; recomputation against `results.json` for in-platform metrics; GRIM applicable to <N> claims; Benford not applicable (bounded metrics)>
+- **Numerical track**: <e.g., every numeric claim in `paper.txt` greppable; recomputation against `results.json` for local-slug metrics; GRIM applicable to <N> claims; Benford not applicable (bounded metrics)>
 - **Logical track**: <e.g., <N> headline claims compressed to A→B→C; controls / rescue / dose / reproducibility checks; cross-checked against `data_contract.md` reuse boundary>
 
 ## 4 · Findings
@@ -67,9 +67,9 @@ For each of the three tracks, state in one line what the auditor did and what wa
 |---|---|---|
 | `findings/logical/<id>.md` | <1–4> | <summary> |
 
-### 4.3 Cross-cap consistency (slug audits only)
+### 4.3 Cross-skill consistency (slug audits only)
 
-For audits where the input is an in-platform slug, summarise the cross-product checks:
+For audits where the input is a local paper-writer slug, summarise the cross-product checks:
 
 - Paper's `provenance.mode` claim vs `results.json["provenance"]["mode"]`: <match | mismatch — finding ID>
 - Paper's reported `n_seeds` vs `len(results.json["seeds"])`: <match | mismatch — finding ID>
@@ -115,4 +115,4 @@ This is **not** a verdict on the paper. It is a structured pointer to where addi
 
 ---
 
-*Audit conducted by `cap-integrity-auditor`. Methodology in `cap-integrity-auditor/.claude/skills/integrity-auditor/`. Human review by a domain expert is strongly recommended before any action is taken on these findings.*
+*Audit conducted by the `integrity-auditor` skill. Methodology in the `integrity-auditor` skill's references. Human review by a domain expert is strongly recommended before any action is taken on these findings.*

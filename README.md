@@ -68,7 +68,7 @@ direction
 ```
 
 `ai4s-agent` is the meta-skill that runs [1]→[4] in order. Skills hand off through a
-deterministic **slug** + a simple `output/<slug>/latest/...` path convention — no
+deterministic **slug** + a simple `output/<skill>/<slug>/latest/...` path convention — no
 code-level coupling.
 
 ## Quick start

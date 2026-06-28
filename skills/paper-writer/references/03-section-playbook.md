@@ -2,7 +2,7 @@
 
 ## Why this exists
 
-Step 3 of the SKILL is "rewrite each section into research prose". That instruction in one line is too thin: research prose is not just longer prose, it is structured prose with conventions readers expect. This reference gives a per-section playbook with required content, length, structure, citation density, and concrete cross-reference patterns.
+Step 3 of the skill is "rewrite each section into research prose". That instruction in one line is too thin: research prose is not just longer prose, it is structured prose with conventions readers expect. This reference gives a per-section playbook with required content, length, structure, citation density, and concrete cross-reference patterns.
 
 ## Universal rules
 

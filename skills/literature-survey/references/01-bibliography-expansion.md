@@ -46,7 +46,7 @@ Write the chosen posture and the parsed timeframe as the first line of `.bib_pro
 
 ### 1. Start with an empty bibliography
 
-`$RUN/bibliography.bib` starts empty after Step 2 of the SKILL. Build it up to ≥ 60 entries (100+ recommended) below before drafting any prose. Optionally also maintain a `$RUN/papers.json` index alongside.
+`$RUN/bibliography.bib` starts empty after Step 2 of the skill. Build it up to ≥ 60 entries (100+ recommended) below before drafting any prose. Optionally also maintain a `$RUN/papers.json` index alongside.
 
 ### 2. Plan a query expansion (12–20 angles)
 
@@ -132,7 +132,7 @@ The `dimension` field powers the literature table later: papers grouped by sub-a
 ### 6. Validate before drafting
 
 ```bash
-cd output/cap-literature-survey/<slug>/survey_paper
+cd output/literature-survey/<slug>/survey_paper
 grep -c "^@" bibliography.bib    # should be ≥ 60 (100+ recommended)
 ```
 

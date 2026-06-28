@@ -35,7 +35,7 @@ The first lines of the report:
 # Experiment Report: <topic>
 
 **Authored by:** AI4S Agent (with human review strongly recommended before publication or production use)
-**Mode:** Simulated (numbers from `cap-experiment-suite/scripts/simulator.py`)  ← or "Measured" / "Mixed"
+**Mode:** Simulated (numbers from `experiment-suite/scripts/simulator.py`)  ← or "Measured" / "Mixed"
 **Date:** YYYY-MM-DD
 **Hardware (if measured):** 1× A100 80GB, 38h wall-clock total
 **Data contract:** `data_contract.md`

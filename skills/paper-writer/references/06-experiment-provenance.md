@@ -2,7 +2,7 @@
 
 ## Why this exists
 
-A paper's tables and figures carry empirical claims. By default the experiment-suite SKILL produces a `results.json` whose numbers come from a deterministic simulator (plausible-shaped, fictional); it also generates a `train.py` the user can run on real data later. That's fine when honestly disclosed, catastrophic when treated as evidence. This reference defines the discipline.
+A paper's tables and figures carry empirical claims. By default the `experiment-suite` skill produces a `results.json` whose numbers come from a deterministic simulator (plausible-shaped, fictional); it also generates a `train.py` the user can run on real data later. That's fine when honestly disclosed, catastrophic when treated as evidence. This reference defines the discipline.
 
 > **Rule**: every quantitative claim in the paper must have a known provenance. The agent does not invent numbers; the simulator does not get conflated with real measurement; what wasn't run says so plainly.
 
@@ -18,10 +18,10 @@ Every table cell, every figure data point, every reported scalar in prose belong
 
 ## How to get measured numbers
 
-The user runs `cap-experiment-suite`'s generated `train.py` (or any compatible code) on real data, dumps the metrics to a JSON file in the same schema the simulator emits, and either:
+The user runs the `experiment-suite` skill's generated `train.py` (or any compatible code) on real data, dumps the metrics to a JSON file in the same schema the simulator emits, and either:
 
-1. **Points this SKILL at the file directly** — copy or symlink the file to `$RUN/results.json` and proceed.
-2. **Runs experiment-suite first against measured data**, so `output/cap-experiment-suite/<slug>/latest/results.json` is already flagged `"simulated": false` and `"provenance": "loaded from <path>"`; this SKILL then reads it via the cross-cap path convention.
+1. **Points this skill at the file directly** — copy or symlink the file to `$RUN/results.json` and proceed.
+2. **Runs experiment-suite first against measured data**, so `output/experiment-suite/<slug>/latest/results.json` is already flagged `"simulated": false` and `"provenance": "loaded from <path>"`; this skill then reads it via the cross-skill path convention.
 
 The agent should proactively suggest path 1 or 2 whenever the user mentions they have (or could compute) real metrics. Otherwise the simulator output is what the paper reports, and the disclosure must reflect that.
 

@@ -99,16 +99,16 @@ The output of this grep should be empty (matches inside narrowly-quoted referenc
 If the input was a slug:
 
 ```bash
-# For an in-platform audit:
-test -s "../../../output/cap-experiment-suite/$SLUG/latest/results.json" && \
+# For a local paper-writer slug audit:
+test -s "../../../output/experiment-suite/$SLUG/latest/results.json" && \
   grep -q "results.json" input_manifest.md
-test -s "../../../output/cap-experiment-suite/$SLUG/latest/data_contract.md" && \
+test -s "../../../output/experiment-suite/$SLUG/latest/data_contract.md" && \
   grep -q "data_contract.md" input_manifest.md
-test -s "../../../output/cap-paper-writer/$SLUG/latest/paper/bibliography.bib" && \
+test -s "../../../output/paper-writer/$SLUG/latest/paper/bibliography.bib" && \
   grep -q "bibliography.bib" input_manifest.md
 ```
 
-The manifest must show that the platform-side artefacts were consulted. A slug audit that ignored `results.json` cannot claim to have done numerical cross-check.
+The manifest must show that the paper-writer-side artefacts were consulted. A slug audit that ignored `results.json` cannot claim to have done numerical cross-check.
 
 ## Soft gates (should pass)
 
@@ -145,7 +145,7 @@ For every numerical finding, the actual formula and inputs are recorded, not jus
 When all gates pass:
 
 ```
-Integrity audit ready: output/cap-integrity-auditor/<slug>/latest/
+Integrity audit ready: output/integrity-auditor/<slug>/latest/
 
 Stats:
   Input mode:    slug | doi | pdf
@@ -176,6 +176,6 @@ That is a legitimate deviation. Fabricating a `_clean.md` to pass G3 is not.
 - [ ] G6 every cited finding file exists
 - [ ] G7 headline severity = max finding level
 - [ ] G8 no verdict language
-- [ ] G9 (slug only) platform-side artefacts shown in manifest
+- [ ] G9 (slug only) paper-writer-side artefacts shown in manifest
 - [ ] S1–S5 soft gates reviewed
 - [ ] Honest scope statement — what was not audited is named

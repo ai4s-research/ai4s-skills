@@ -13,7 +13,7 @@ Every finding is written to its file the moment it is identified. Findings live 
 ### Invariant 2 — Progress is observable on disk
 
 ```bash
-cd output/cap-integrity-auditor/<slug>/latest
+cd output/integrity-auditor/<slug>/latest
 
 ls findings/image/ | wc -l          # image findings count
 ls findings/numerical/ | wc -l      # numerical findings count
@@ -53,7 +53,7 @@ Stable IDs let the report cite by relative path: `findings/image/fig2A-fig5C-ove
 ## Recovery — when a session resumes mid-audit
 
 ```bash
-cd output/cap-integrity-auditor/<slug>/latest
+cd output/integrity-auditor/<slug>/latest
 
 # Manifest done?
 test -s input_manifest.md && echo "manifest OK"

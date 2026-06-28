@@ -28,7 +28,7 @@ Why this exists (empirical baseline):
     annual wind generation reported as 'TWh' when source-data MOESM3 was in
     GWh. The headline national totals were correct; the per-county
     supplementary tables would have implied a single Chinese county producing
-    ~34% of China's national electricity. SKILL v1.5 sweepers did not catch
+    ~34% of China's national electricity. The skill's v1.5 sweepers did not catch
     this; auditor caught it by reading and recognizing the implausible
     magnitude. This sweeper mechanizes that recognition.
 

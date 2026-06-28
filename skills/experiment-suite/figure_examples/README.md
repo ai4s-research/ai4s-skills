@@ -12,7 +12,7 @@ python make_fig_04_ablation.py
 ```
 
 These are illustrative templates — copy and adapt for your data. They were
-extracted from a successful enrichment run of the cap-paper-writer skill on
+extracted from a successful enrichment run of the `paper-writer` skill on
 the topic *Transformer-based time-series forecasting* (May 2026); the data
 embedded inline are simulated and meant only to illustrate the formatting.
 
@@ -29,5 +29,5 @@ watermarks stay consistent across the experiment package.
 - "simulated" watermark in italic gray for runs from the simulator path
 - Save PDF + SVG + TIFF together when the environment allows it
 
-See cap-paper-writer/.claude/skills/paper-writer/references/02-figures-publication-grade.md
+See the `paper-writer` skill's `references/02-figures-publication-grade.md`
 for the full taste guide.

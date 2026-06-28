@@ -7,7 +7,7 @@ description: Use when the user wants a complete, publication-grade research pape
 
 ## Overview
 
-End-to-end research paper builder. **Single stage, full quality from the start** — there is no skeleton phase to enrich later. The agent (Claude Code / Cursor / Aider / Codex / …) does the writing using its own tools (WebFetch, WebSearch, Write, Bash). This SKILL has no Python runtime; it is purely a procedure + reference playbooks + a LaTeX template.
+End-to-end research paper builder. **Single stage, full quality from the start** — there is no skeleton phase to enrich later. The agent (Claude Code / Cursor / Aider / Codex / …) does the writing using its own tools (WebFetch, WebSearch, Write, Bash). This skill has no Python runtime; it is purely a procedure + reference playbooks + a LaTeX template.
 
 The substantive work is decomposed into reference playbooks under `references/`:
 
@@ -33,10 +33,10 @@ The full pass does not fit in a single turn. The bibliography is built across ~2
 
 ## When NOT to Use
 
-- User wants only a literature survey → `literature-survey`.
-- User wants only the experiment package → `experiment-suite`.
-- User wants only direction/topic exploration → `research-explorer`.
-- User wants the full multi-cap pipeline → `ai4s-agent` (which invokes this SKILL as one stage).
+- User wants only a literature survey → the `literature-survey` skill.
+- User wants only the experiment package → the `experiment-suite` skill.
+- User wants only direction/topic exploration → the `research-explorer` skill.
+- User wants the full multi-skill pipeline → the `ai4s-agent` skill (which invokes this skill as one stage).
 
 ## Workflow
 
@@ -45,7 +45,7 @@ The full pass does not fit in a single turn. The bibliography is built across ~2
 Confirm with the user:
 
 - **Topic** — specific enough to motivate a title; if too broad, narrow it before proceeding.
-- **Experiment provenance** — measured (user supplied a `results.json` produced by `cap-experiment-suite` or compatible) or simulated. Default is simulated; in that case the disclosure footnote must flag it (see `references/06-experiment-provenance.md`).
+- **Experiment provenance** — measured (user supplied a `results.json` produced by the `experiment-suite` skill or compatible) or simulated. Default is simulated; in that case the disclosure footnote must flag it (see `references/06-experiment-provenance.md`).
 - **Language** — default Chinese in conversation; the paper itself is English unless the user requests otherwise.
 
 Always tell the user that human review by a domain expert is recommended before any scientific publication or production use.
@@ -58,14 +58,14 @@ Create a timestamped working directory and copy the template. Runs never overwri
 TOPIC="<topic>"
 SLUG=$(python3 -c "import re,hashlib,sys; t=sys.argv[1]; n=re.sub(r'[\\s_]+','-',re.sub(r'[^\\w\\s-]','',t.lower().strip())).strip('-')[:40].rstrip('-'); h=hashlib.sha1(t.encode()).hexdigest()[:8]; print(f'{n}-{h}')" "$TOPIC")
 TS=$(date +%Y-%m-%d_%H%M%S)
-RUN=output/cap-paper-writer/$SLUG/$TS/paper
+RUN=output/paper-writer/$SLUG/$TS/paper
 
 mkdir -p "$RUN/sections" "$RUN/figures"
-cp -r cap-paper-writer/templates/paper/. "$RUN/"
-ln -sfn "$TS" "output/cap-paper-writer/$SLUG/latest"
+cp -r templates/paper/. "$RUN/"
+ln -sfn "$TS" "output/paper-writer/$SLUG/latest"
 ```
 
-In commands below `$RUN` = `output/cap-paper-writer/<slug>/latest/paper`.
+In commands below `$RUN` = `output/paper-writer/<slug>/latest/paper`.
 
 The template provides only `main.tex` (title placeholder), an empty `sections/` skeleton, an empty `figures/`, and `compile.sh`. Everything substantive is produced in Step 3 below.
 
@@ -128,23 +128,23 @@ Run all G1–G8 hard gates and S1–S5 soft gates. If a hard gate fails, fix and
 
 Report to the user:
 
-1. `output/cap-paper-writer/<slug>/latest/paper/main.pdf` — final PDF.
-2. `output/cap-paper-writer/<slug>/latest/paper/` — complete LaTeX project (reproducible).
+1. `output/paper-writer/<slug>/latest/paper/main.pdf` — final PDF.
+2. `output/paper-writer/<slug>/latest/paper/` — complete LaTeX project (reproducible).
 3. Stats per the report format in `references/05-quality-gate.md` (pages, bib size, total `\cite{}`, figure count, table count, provenance, compile warnings).
 
-## Cross-cap data flow (path convention)
+## Cross-skill data flow (path convention)
 
-If a sibling cap has already run for the same topic, **reuse its outputs by path**:
+If a sibling skill has already run for the same topic, **reuse its outputs by path**:
 
-- `output/cap-literature-survey/<slug>/latest/bibliography.bib` → seed `$RUN/bibliography.bib` (still bring it up to 200+ in 3.1 with WebFetch).
-- `output/cap-experiment-suite/<slug>/latest/results.json` → the source of the numbers cited in 3.3 / 3.5; its `simulated` flag controls the disclosure clause in 3.4.
-- `output/cap-experiment-suite/<slug>/latest/figures/*.pdf` (+ `manifest.json`) → reuse in 3.2 rather than redrawing.
+- `output/literature-survey/<slug>/latest/bibliography.bib` → seed `$RUN/bibliography.bib` (still bring it up to 200+ in 3.1 with WebFetch).
+- `output/experiment-suite/<slug>/latest/results.json` → the source of the numbers cited in 3.3 / 3.5; its `simulated` flag controls the disclosure clause in 3.4.
+- `output/experiment-suite/<slug>/latest/figures/*.pdf` (+ `manifest.json`) → reuse in 3.2 rather than redrawing.
 
-The slug formula in Step 2 is the contract; all four caps compute the same slug for the same topic.
+The slug formula in Step 2 is the contract; all four skills compute the same slug for the same topic.
 
 ## Important rules
 
-- **No LLM SDK in this cap.** No `import anthropic` / `import openai`. The agent runs the procedure; the cap is just SKILL + references + template.
+- **No LLM SDK in this skill.** No `import anthropic` / `import openai`. The agent runs the procedure; the skill is just SKILL.md + references + template.
 - **No fabricated citations.** Every BibTeX entry must trace back to a URL fetched this session. Real or weaker claim — never fake reference.
 - **Simulated numbers stay visibly labelled.** Title `\thanks` + abstract disclosure paragraph + per-caption disclosure. Do not let the simulated label disappear during drafting.
 - **Honest stop > padding.** If the topic is too niche for 200+ real citations, say so to the user instead of inventing entries.
