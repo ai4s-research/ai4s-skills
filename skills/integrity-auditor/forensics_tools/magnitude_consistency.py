@@ -219,7 +219,7 @@ def tokens(text: str) -> set[str]:
     out = set()
     for w in re.findall(r"[A-Za-z][A-Za-z\-]{2,}", text):
         out.add(w.lower())
-    for w in re.findall(r"[一-鿿]{2,8}", text):
+    for w in re.findall(r"[\u4e00-\u9fff]{2,8}", text):
         out.add(w)
     return out
 

@@ -6,7 +6,7 @@ description: Generate beautiful, high-resolution mindmaps from Markdown unordere
 ## When to use this skill
 
 Use this skill when the user asks to:
-- Create a mindmap / 思维导图 / 脑图 from a topic or data.
+- Create a mindmap from a topic or data.
 - Convert a Markdown outline into a visual mindmap image or PDF.
 - Generate a colorful, presentation-quality mindmap with auto-export to PNG/PDF.
 - Build a structured outline (unordered list) and then render it as a mindmap.
@@ -29,18 +29,17 @@ and retry. Never install speculatively before a failure is observed.
 Ask the user (or infer from context):
 - **Topic**: What is the central theme?
 - **Data source**: Do they already have a Markdown file, or should you research and write one?
-- **Source fidelity vs synthesis** — a spectrum, not a binary. The more specifically the request points to a **named existing artifact** (a particular book's 目录 / ToC, a particular course's 大纲 / syllabus, a specific spec or documentation structure, a numbered chapter list), the more you should **reproduce the source's real structure verbatim** — preserve original labels and numbering, follow the source's natural depth, and add NO fabricated descriptions. The more the request is a **broad topic** with no single canonical source, the more the structural targets below apply. Most requests sit somewhere on this spectrum; judge and lean accordingly.
+- **Source fidelity vs synthesis** — a spectrum, not a binary. The more specifically the request points to a **named existing artifact** (a particular book's table of contents (ToC), a particular course's syllabus, a specific spec or documentation structure, a numbered chapter list), the more you should **reproduce the source's real structure verbatim** — preserve original labels and numbering, follow the source's natural depth, and add NO fabricated descriptions. The more the request is a **broad topic** with no single canonical source, the more the structural targets below apply. Most requests sit somewhere on this spectrum; judge and lean accordingly.
 - **Theme**: `air` (light blue glow + white cards, default), `editorial` (warm paper + jewel-tone branches), `midnight` (deep black + neon accents), or `zen` (soft misty background + muted pastels).
 - **Language**: 
-  - If the user explicitly specifies a language ("用英文"、"in English"、"日本語で" 等), use that language for all node text (labels + layer-5 descriptions).
-  - Otherwise **default to 中文**.
-  - If the user's request itself is written entirely in English and no Chinese appears, take that as an implicit request for an English mindmap.
-  - Mixed-language input (Chinese prompt with English technical terms) → Chinese mindmap with English terms preserved inline. Do not translate proper nouns, model names, or established technical terms.
+  - If the user explicitly specifies a language (e.g. "in English", "in Japanese"), use that language for all node text (labels + layer-5 descriptions).
+  - Otherwise, match the language of the user's request; default to English when the request language is unclear.
+  - Do not translate proper nouns, model names, or established technical terms — preserve them inline.
 
 **Default structural targets — for synthesis work only.** These do NOT apply when you are faithfully reproducing a named source (in that case, follow the source's actual shape). They also yield to any numbers the user gives explicitly.
 - **1 root** + **6–10 top-level branches** (default aim: ~9).
 - **Maximum depth = 5 layers** (root → branch → subtopic → item → leaf-with-description). Layer 5 is reserved for the **important, information-dense** nodes — it is **not** a mandatory floor for every path.
-- **Layer-5 leaves (when present) MUST carry a substantive description** — around **200 Chinese characters** (or ~150 English words if the mindmap is in English), roughly 2–4 sentences — that explains mechanism, why it matters, quantitative detail, or a concrete example. A one-line label is not enough at layer 5; if you cannot write ~200 汉字 of real content, the node does not belong at layer 5.
+- **Layer-5 leaves (when present) MUST carry a substantive description** — around **200 Chinese characters** (or ~150 English words if the mindmap is in English), roughly 2–4 sentences — that explains mechanism, why it matters, quantitative detail, or a concrete example. A one-line label is not enough at layer 5; if you cannot write ~200 Chinese characters of real content, the node does not belong at layer 5.
 - Intermediate nodes (layers 2–4) stay concise (1–10 words) and may themselves be terminal leaves when that is the right level of detail.
 - **Asymmetry is required, not a flaw.** Branches should be weighted by importance and information value, *not* padded for visual symmetry:
   - Pillar branches (where the real substance lives) should go deep and wide, with many children and rich layer-5 descriptions.
@@ -59,7 +58,7 @@ If the user already has a `.md` file, note its path and proceed to Step 3.
 **CRITICAL: If the user has NOT provided a `.md` file, you MUST perform web research BEFORE writing the outline.** Do not rely solely on internal knowledge.
 
 1. **Research** (mandatory): Use `WebSearch` to find authoritative, high-quality sources:
-   - Official book table of contents (出版社目录、豆瓣读书目录).
+   - Official book table of contents (publisher's catalog, Douban Books listing).
    - Wikipedia structured sections.
    - Academic course syllabi or reputable blog series.
    - Official documentation / white-paper outlines.
@@ -95,12 +94,12 @@ Structure audit:
 - Max depth reached:  <D>   (ceiling 5)
 - Pillar branches (reach layer 5 with substantive content): <X>
 - Shallow branches (stop at layer 2–3 by design): <Y>
-- Layer-5 leaves with ≥~200 汉字 description: <A> / <total layer-5 leaves>
+- Layer-5 leaves with ≥~200 Chinese characters description: <A> / <total layer-5 leaves>
 - Shape note: <one sentence justifying which branches go deep and which stay shallow, and why>
 ```
 
 **Red flags** — rework the outline before rendering if any apply:
-- Layer-5 leaves that are one-line labels or under ~100 汉字 → either enrich them to ~200 汉字 of real content, or demote the node to layer 4.
+- Layer-5 leaves that are one-line labels or under ~100 Chinese characters → either enrich them to ~200 Chinese characters of real content, or demote the node to layer 4.
 - Every branch reaches the same depth with similar child counts → you are padding for symmetry; prune the weakest branches back.
 - A branch exists only to list common knowledge the target reader already owns → cut it or collapse it.
 - Pillar branches are shallower than supporting branches → rebalance so information density follows importance.
@@ -130,7 +129,7 @@ python scripts/generate_mindmap.py \
 python scripts/generate_mindmap.py \
   --md mindmap-output/large-test.md \
   --output-dir ./mindmap-output \
-  --title "人工智能全景图" \
+  --title "Artificial Intelligence Panorama" \
   --theme air \
   --scale 3
 ```
@@ -138,7 +137,7 @@ python scripts/generate_mindmap.py \
 ### Step 4 — Deliver results
 
 Report the three generated files to the user:
-1. `{title}.html` — interactive mindmap (open in browser to zoom/pan/collapse). **实时渲染**：在同一目录启动 HTTP 服务器（如 `python -m http.server`）后通过浏览器访问，修改 `.md` 文件并刷新页面即可看到更新；直接本地打开则使用内嵌内容，行为与之前一致。
+1. `{title}.html` — interactive mindmap (open in browser to zoom/pan/collapse). **Live rendering**: after starting an HTTP server in the same directory (e.g. `python -m http.server`) and accessing it through a browser, edit the `.md` file and refresh the page to see the update; opening it directly as a local file uses the embedded content, behaving the same as before.
 2. `{title}.png` — high-resolution full-page image (suitable for slides, social media, docs).
 3. `{title}.pdf` — vector-like PDF export with print background.
 

@@ -24,7 +24,7 @@ The substantive work is decomposed into reference playbooks under `references/`:
 
 ## When to Use
 
-- User asks for a "survey" / "review" / "文献综述" on a specific topic.
+- User asks for a "survey" / "review" on a specific topic.
 - User has a research topic and wants a structured map of the field with citations.
 - User needs background reading curated for a thesis chapter or grant section.
 

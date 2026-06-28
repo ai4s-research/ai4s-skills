@@ -11,10 +11,10 @@ Research-topic exploration SKILL. Takes a broad direction, performs multi-dimens
 
 ## When to Use
 
-- User says "I want to research X" / "我对 X 感兴趣" without a specific topic.
+- User says "I want to research X" without a specific topic.
 - User wants to know "what are the hot topics in X".
 - User needs help narrowing a broad field into 5–10 candidate topics.
-- User asks for "research landscape overview" / "选题分析".
+- User asks for "research landscape overview".
 
 ## When NOT to Use
 
@@ -29,7 +29,7 @@ Confirm with the user:
 
 - **Direction** — the broad area of interest (e.g., "federated learning", "NLP for healthcare").
 - **Constraints** — theory vs. applied, specific methods, target venue, compute budget, time horizon.
-- **Language** — default Chinese in conversation; reports in Chinese unless the user requests otherwise.
+- **Language** — default English in conversation; reports in English unless the user requests otherwise.
 
 ### Step 2 — Set up the run directory
 

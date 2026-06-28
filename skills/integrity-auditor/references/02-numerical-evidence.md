@@ -53,7 +53,7 @@ The sweeper outputs two flag types:
 
 Hits tagged `(entity-overlap)` carry the highest confidence; the bilingual map enables cross-language matching for Chinese / English papers (Chinese row labels vs English transliterations in supplementary text).
 
-Empirical baseline: Hu et al. 2026 Nature paper (10.1038/s41586-026-10570-z) `MOESM1` Supplementary Note 5 + Table 7 + `MOESM2` reviewer-response Table all reported per-county wind generation as "TWh" while the source data MOESM3 `wind_generation_GWh` column was in GWh. Tongyu (通榆县) is the canonical example: text "exceeding 2,900 TWh yr⁻¹", XLSX value 2916.07 GWh, implied 1000× unit error. SKILL v1.5 sweepers did not catch this class; v1.6 `magnitude_consistency.py` catches it directly (top hit with entity-overlap tag).
+Empirical baseline: Hu et al. 2026 Nature paper (10.1038/s41586-026-10570-z) `MOESM1` Supplementary Note 5 + Table 7 + `MOESM2` reviewer-response Table all reported per-county wind generation as "TWh" while the source data MOESM3 `wind_generation_GWh` column was in GWh. Tongyu County is the canonical example: text "exceeding 2,900 TWh yr⁻¹", XLSX value 2916.07 GWh, implied 1000× unit error. SKILL v1.5 sweepers did not catch this class; v1.6 `magnitude_consistency.py` catches it directly (top hit with entity-overlap tag).
 
 Anti-pattern: do not pass the script all numbers (`--min-value 1`) — it will produce voluminous noise from coincidental 10× pairs. Use `--min-value 100` and `--top-k 1` for clean reports.
 
@@ -182,7 +182,7 @@ def deterministic_pairs(ws, min_n=10):
 
 Every hit must then be **manually verified** for sub-table layout — the same sheet often hosts multiple sub-panels stacked vertically with different column blocks, and the automatic sweeper cannot tell whether a paired-row hit reflects paired biological measurements within one sub-panel or coincident numerics across unrelated sub-panels. Confirmed paired hits (matching column headers under the same group label, contiguous data rows) are **Level 4** findings.
 
-Empirical baseline: the Wang Ping 2025 Nature paper, MOESM7 `Source Data Fig.4`, has `col D − col E = 0.300` across all 35 rows under the `shHDAC6` group header `VR (0 h)` / `VR (24 h)`. This is the same anomaly publicly named by 耿同学 (April 2026); the sweeper recipe above re-derives it from the open-access source-data file without any prior knowledge of the answer. Common patterns:
+Empirical baseline: the Wang Ping 2025 Nature paper, MOESM7 `Source Data Fig.4`, has `col D − col E = 0.300` across all 35 rows under the `shHDAC6` group header `VR (0 h)` / `VR (24 h)`. This is the same anomaly publicly named by Geng (April 2026); the sweeper recipe above re-derives it from the open-access source-data file without any prior knowledge of the answer. Common patterns:
 
 - body says `n=6`, figure caption says `n=3`
 - methods says "three independent biological replicates", figure shows two

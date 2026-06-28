@@ -27,7 +27,7 @@ The full pass does not fit in a single turn. The bibliography is built across ~2
 
 ## When to Use
 
-- User asks to "write a paper" / "写论文" on a specific topic.
+- User asks to "write a paper" on a specific topic.
 - User wants Abstract + Introduction + Related Work + Method + Experiment + Results + Conclusion.
 - User has experiment results (a `results.json`) and wants them formatted into a paper.
 

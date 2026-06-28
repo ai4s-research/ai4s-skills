@@ -11,8 +11,13 @@ Exits non-zero (and prints every problem) if any check fails. Run in CI.
 """
 from __future__ import annotations
 
+import re
 import sys
 from pathlib import Path
+
+NAME_RE = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*")
+MAX_NAME = 64
+MAX_DESCRIPTION = 1024
 
 ROOT = Path(__file__).resolve().parent.parent
 SKILLS_DIR = ROOT / "skills"
@@ -54,12 +59,21 @@ def main() -> int:
         if fm is None:
             errors.append(f"{name}: SKILL.md has no valid '---' frontmatter block")
             continue
-        if not fm.get("name"):
+        nm = fm.get("name", "")
+        desc = fm.get("description", "")
+        if not nm:
             errors.append(f"{name}: frontmatter missing 'name'")
-        elif fm["name"] != name:
-            errors.append(f"{name}: frontmatter name '{fm['name']}' != folder '{name}'")
-        if not fm.get("description"):
+        else:
+            if nm != name:
+                errors.append(f"{name}: frontmatter name '{nm}' != folder '{name}'")
+            if not NAME_RE.fullmatch(nm):
+                errors.append(f"{name}: name '{nm}' must be lowercase letters, numbers, and hyphens")
+            if len(nm) > MAX_NAME:
+                errors.append(f"{name}: name exceeds {MAX_NAME} chars (is {len(nm)})")
+        if not desc:
             errors.append(f"{name}: frontmatter missing 'description'")
+        elif len(desc) > MAX_DESCRIPTION:
+            errors.append(f"{name}: description exceeds {MAX_DESCRIPTION} chars (is {len(desc)})")
 
     if errors:
         print("Skill validation FAILED:")

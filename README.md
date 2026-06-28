@@ -44,13 +44,13 @@ final-quality research artifacts.
 
 | Skill | Role | Primary output |
 |---|---|---|
-| [**ai4s-agent**](skills/ai4s-agent) | Meta-skill — chains the four downstream skills end to end | the full package below |
-| [**research-explorer**](skills/research-explorer) | Topic exploration from a broad direction | `research_exploration.md` · `topic_matrix.md` · `literature_pre_survey.md` |
-| [**literature-survey**](skills/literature-survey) | Comprehensive survey generation | 6–20 pp survey PDF + 60+ real citations + LaTeX source + taxonomy figures |
-| [**experiment-suite**](skills/experiment-suite) | Experiment package | design doc + runnable code + `results.json` (with provenance) + publication figures + report |
-| [**paper-writer**](skills/paper-writer) | Research paper | 8–14 pp paper PDF + 200+ citations + 4–8 figures + tables |
-| [**mindmap-render**](skills/mindmap-render) | Mindmap rendering | renders a `topic_matrix.md` into an image (ships a Python script) |
-| [**integrity-auditor**](skills/integrity-auditor) | Paper integrity audit | image / numerical / logical findings, 4-level evidence grading, `audit_report.md` + forensics tools |
+| [**ai4s-agent**](skills/ai4s-agent/SKILL.md) | Meta-skill — chains the four downstream skills end to end | the full package below |
+| [**research-explorer**](skills/research-explorer/SKILL.md) | Topic exploration from a broad direction | `research_exploration.md` · `topic_matrix.md` · `literature_pre_survey.md` |
+| [**literature-survey**](skills/literature-survey/SKILL.md) | Comprehensive survey generation | 6–20 pp survey PDF + 60+ real citations + LaTeX source + taxonomy figures |
+| [**experiment-suite**](skills/experiment-suite/SKILL.md) | Experiment package | design doc + runnable code + `results.json` (with provenance) + publication figures + report |
+| [**paper-writer**](skills/paper-writer/SKILL.md) | Research paper | 8–14 pp paper PDF + 200+ citations + 4–8 figures + tables |
+| [**mindmap-render**](skills/mindmap-render/SKILL.md) | Mindmap rendering | renders a `topic_matrix.md` into an image (ships a Python script) |
+| [**integrity-auditor**](skills/integrity-auditor/SKILL.md) | Paper integrity audit | image / numerical / logical findings, 4-level evidence grading, `audit_report.md` + forensics tools |
 
 ### How they connect
 

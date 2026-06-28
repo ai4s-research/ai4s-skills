@@ -13,8 +13,8 @@ Vela then dynamically executes the steps listed there.
   "steps": [
     {
       "id": "kebab-case-unique-id",
-      "name": "≤20 字 中文步骤名 (UI 显示)",
-      "prompt": "完整 prompt; 下一个 step 直接收到这串",
+      "name": "≤20-char step name (shown in UI)",
+      "prompt": "full prompt; the next step receives this string directly",
       "reset": true,
       "status": "pending"
     }
@@ -44,7 +44,7 @@ Vela worker invariants:
 ### Step count
 
 Default range: **3–8 steps**. Push higher only when the user explicitly
-asks for iteration (e.g. "跑 20 轮实验"). Each step is a long-running
+asks for iteration (e.g. "run 20 rounds of experiments"). Each step is a long-running
 Claude session — `PIPELINE_TIMEOUT` (currently 3600s on home-3090)
 caps how much one step can chew.
 
@@ -74,22 +74,22 @@ Each `steps[].prompt` is the full text the downstream Claude session
 receives. Typical structure:
 
 ```
-读 .claude/skills/<skill-name>/SKILL.md + 相关 references/。
-基于 {上游产物路径}, 执行 ...
-产物写到 {输出路径}.
+Read .claude/skills/<skill-name>/SKILL.md + relevant references/.
+Based on {upstream output path}, do ...
+Write outputs to {output path}.
 ```
 
 Be specific about which SKILL.md to read and which `references/` to
 consult. References that aren't read up-front lead to thinner output.
 
-**`{输出路径}` 必须是具体且非 `.vela/` 的路径** —— `.vela/` 只放编排状态,
-绝不放产物/中间文件(见仓库根 `AGENTS.md`「产物与中间文件路径」)。
-- 走 cap 的 step → `output/cap-<name>/<slug>/<timestamp>/...`
-- 不走 cap 的轻 step → 交付物 `output/<task-slug>/`,中间文件/可复用脚本 `work/...`
-- 可复用的代码/脚本放 `work/`,**不要放 `/tmp/`**(跨 step 会丢、Files 里看不到)
+**`{output path}` must be a concrete path that is not under `.vela/`** — `.vela/` holds orchestration state only,
+never products / intermediate files (see repo-root `AGENTS.md` "Product and intermediate file paths").
+- step that goes through a cap → `output/cap-<name>/<slug>/<timestamp>/...`
+- light step not going through a cap → deliverables `output/<task-slug>/`, intermediate files / reusable scripts `work/...`
+- put reusable code/scripts in `work/`, **not in `/tmp/`** (lost across steps, invisible in Files)
 
-把这个具体路径直接写进 step prompt,别让下游 step 自己猜——猜的结果就是
-产物被丢进 `.vela/`。
+Write this concrete path directly into the step prompt; don't let the downstream step guess — guessing ends up
+dumping products into `.vela/`.
 
 ## Validation before exit
 
