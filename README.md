@@ -1,12 +1,8 @@
 <div align="center">
 
-# AI4S Skills
+[![AI4S Skills — agent skills for AI for Science](assets/banner.png)](https://github.com/ai4s-research/ai4s-skills)
 
-**Open-source [Agent Skills](https://docs.claude.com/en/docs/claude-code/skills) for AI for Science.**
-
-Turn a research direction or a concrete topic into a full research package —
-topic exploration, literature survey, runnable experiments, a publication-grade
-paper, and an integrity audit — driven by any coding agent.
+**Open-source [Agent Skills](https://docs.claude.com/en/docs/claude-code/skills) for AI for Science** — turn a research direction or a concrete topic into topic exploration, literature surveys, runnable experiments, publication-grade papers & integrity audits, driven by any coding agent.
 
 <p>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"></a>
