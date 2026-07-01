@@ -18,16 +18,16 @@
 
 ## 目录
 
-- [七个 skill](#七个-skill)
-- [如何衔接](#如何衔接)
-- [真实、可核验](#真实可核验)
-- [示例](#示例)
-- [安装](#安装)
-- [使用](#使用)
-- [仓库结构](#仓库结构)
-- [内置工具](#内置工具)
-- [贡献](#贡献)
-- [许可证](#许可证)
+- [🧩 七个 skill](#七个-skill)
+- [🔗 如何衔接](#如何衔接)
+- [✅ 真实、可核验](#真实可核验)
+- [🔬 示例](#示例)
+- [📦 安装](#安装)
+- [🚀 使用](#使用)
+- [🗂️ 仓库结构](#仓库结构)
+- [🛠️ 内置工具](#内置工具)
+- [🤝 贡献](#贡献)
+- [⚖️ 许可证](#许可证)
 
 ## 七个 skill
 
@@ -80,7 +80,21 @@ integrity-auditor ──▶ 审计任意论文:外部 PDF / DOI / arXiv,或 [4] 
 Burgers Solution Operator with a Fourier Neural Operator》** —— 一篇 8 页论文,背后是
 agent 亲手写并运行的代码。完整产物见 [`examples/fno-burgers/`](examples/fno-burgers/)(论文、代码、`results.json`、报告)。
 
-[<img src="assets/example-fno-burgers-p1.webp" width="360" alt="FNO / Burgers 论文首页">](examples/fno-burgers/paper.pdf)
+<div align="center">
+<table>
+<tr>
+<td><a href="examples/fno-burgers/paper.pdf"><img src="assets/paper/page-1.webp" width="230" alt="论文第 1 页"></a></td>
+<td><a href="examples/fno-burgers/paper.pdf"><img src="assets/paper/page-2.webp" width="230" alt="论文第 2 页"></a></td>
+<td><a href="examples/fno-burgers/paper.pdf"><img src="assets/paper/page-3.webp" width="230" alt="论文第 3 页"></a></td>
+</tr>
+<tr>
+<td><a href="examples/fno-burgers/paper.pdf"><img src="assets/paper/page-4.webp" width="230" alt="论文第 4 页"></a></td>
+<td><a href="examples/fno-burgers/paper.pdf"><img src="assets/paper/page-5.webp" width="230" alt="论文第 5 页"></a></td>
+<td><a href="examples/fno-burgers/paper.pdf"><img src="assets/paper/page-6.webp" width="230" alt="论文第 6 页"></a></td>
+</tr>
+</table>
+<sub><i>8 页论文(此处展示前 6 页)—— 点击任意页查看完整 PDF。</i></sub>
+</div>
 
 - **真代码、真运行** —— `model.py` 是一个 1-D FNO;完整实验在笔记本 CPU 上约 20 分钟跑完。
 - **实测结果** —— FNO 6.67% rel-L2,优于 MLP 22.47%、CNN 68.12%(3 seeds);零样本超分辨率在 128→1024 网格上稳定于 6.7–8.1%。

@@ -20,16 +20,16 @@ audits, with every citation, number, and figure traceable to its source.
 
 ## Contents
 
-- [The skills](#the-skills)
-- [How they connect](#how-they-connect)
-- [Authenticity](#authenticity)
-- [Example](#example)
-- [Install](#install)
-- [Usage](#usage)
-- [Repository layout](#repository-layout)
-- [Included tools](#included-tools)
-- [Contributing](#contributing)
-- [License](#license)
+- [🧩 The skills](#the-skills)
+- [🔗 How they connect](#how-they-connect)
+- [✅ Authenticity](#authenticity)
+- [🔬 Example](#example)
+- [📦 Install](#install)
+- [🚀 Usage](#usage)
+- [🗂️ Repository layout](#repository-layout)
+- [🛠️ Included tools](#included-tools)
+- [🤝 Contributing](#contributing)
+- [⚖️ License](#license)
 
 ## The skills
 
@@ -85,7 +85,21 @@ Solution Operator with a Fourier Neural Operator"** — an 8-page paper backed b
 the agent wrote and ran. Full artifact in [`examples/fno-burgers/`](examples/fno-burgers/)
 (paper, code, `results.json`, report).
 
-[<img src="assets/example-fno-burgers-p1.webp" width="360" alt="First page of the FNO / Burgers paper">](examples/fno-burgers/paper.pdf)
+<div align="center">
+<table>
+<tr>
+<td><a href="examples/fno-burgers/paper.pdf"><img src="assets/paper/page-1.webp" width="230" alt="paper page 1"></a></td>
+<td><a href="examples/fno-burgers/paper.pdf"><img src="assets/paper/page-2.webp" width="230" alt="paper page 2"></a></td>
+<td><a href="examples/fno-burgers/paper.pdf"><img src="assets/paper/page-3.webp" width="230" alt="paper page 3"></a></td>
+</tr>
+<tr>
+<td><a href="examples/fno-burgers/paper.pdf"><img src="assets/paper/page-4.webp" width="230" alt="paper page 4"></a></td>
+<td><a href="examples/fno-burgers/paper.pdf"><img src="assets/paper/page-5.webp" width="230" alt="paper page 5"></a></td>
+<td><a href="examples/fno-burgers/paper.pdf"><img src="assets/paper/page-6.webp" width="230" alt="paper page 6"></a></td>
+</tr>
+</table>
+<sub><i>The 8-page paper (first 6 pages) — click any page for the full PDF.</i></sub>
+</div>
 
 - **Real code, really run** — `model.py` is a 1-D FNO; the full study runs in ~20 min on a laptop CPU.
 - **Measured results** — FNO 6.67% rel-L2 vs MLP 22.47% and CNN 68.12% (3 seeds); zero-shot super-resolution holds 6.7–8.1% from grid 128 to 1024.
