@@ -1,0 +1,23 @@
+seed 0 FNO  test relL2 = 0.0674  (74.2k params)  [96s]
+seed 0 MLP  test relL2 = 0.2201  (657.0k params)  [102s]
+seed 0 CNN  test relL2 = 0.6789  (41.8k params)  [247s]
+seed 1 FNO  test relL2 = 0.0657  (74.2k params)  [337s]
+seed 1 MLP  test relL2 = 0.2211  (657.0k params)  [343s]
+seed 1 CNN  test relL2 = 0.6827  (41.8k params)  [489s]
+seed 2 FNO  test relL2 = 0.0669  (74.2k params)  [576s]
+seed 2 MLP  test relL2 = 0.2330  (657.0k params)  [582s]
+seed 2 CNN  test relL2 = 0.6820  (41.8k params)  [727s]
+super-res grid   128  FNO 0.0674  CNN 0.6789  [730s]
+super-res grid   256  FNO 0.0785  CNN 0.7441  [736s]
+super-res grid   512  FNO 0.0809  CNN 0.7404  [751s]
+super-res grid  1024  FNO 0.0718  CNN 0.7269  [798s]
+modes  4  test relL2 = 0.0810  [885s]
+modes  8  test relL2 = 0.0684  [955s]
+modes 12  test relL2 = 0.0669  [1027s]
+modes 16  test relL2 = 0.0674  [1101s]
+n_train   200  test relL2 = 0.1201  [1120s]
+n_train   500  test relL2 = 0.0845  [1161s]
+n_train  1000  test relL2 = 0.0674  [1234s]
+
+DONE in 1234s. Wrote results.json + figures/figdata.npz
+Main test rel-L2: {'FNO': 0.0667, 'MLP': 0.2247, 'CNN': 0.6812}
