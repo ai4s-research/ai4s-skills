@@ -10,6 +10,7 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"></a>
   <img src="https://img.shields.io/badge/skills-7-success" alt="7 skills">
   <a href="http://makeapullrequest.com"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"></a>
+  <a href="https://linux.do"><img src="https://img.shields.io/badge/Join-linux.do-orange" alt="linux.do"></a>
 </p>
 
 </div>
@@ -28,6 +29,7 @@
 - [🛠️ 内置工具](#内置工具)
 - [🤝 贡献](#贡献)
 - [⚖️ 许可证](#许可证)
+- [🙏 致谢](#致谢)
 
 ## 七个 skill
 
@@ -174,3 +176,7 @@ skill 调用的、单一职责的小脚本。每个目录都有各自的 `requir
 [MIT](LICENSE)。
 
 > 输出均为草稿。在任何引用、投稿或决策前,建议由领域专家复核。请核实数字、引用与论断。
+
+## 致谢
+
+感谢 [linux.do](https://linux.do) —— 一个充满活力的技术社区,本项目在此分享与讨论。

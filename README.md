@@ -12,6 +12,7 @@ audits, with every citation, number, and figure traceable to its source.
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"></a>
   <img src="https://img.shields.io/badge/skills-7-success" alt="7 skills">
   <a href="http://makeapullrequest.com"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"></a>
+  <a href="https://linux.do"><img src="https://img.shields.io/badge/Join-linux.do-orange" alt="linux.do"></a>
 </p>
 
 </div>
@@ -30,6 +31,7 @@ audits, with every citation, number, and figure traceable to its source.
 - [🛠️ Included tools](#included-tools)
 - [🤝 Contributing](#contributing)
 - [⚖️ License](#license)
+- [🙏 Acknowledgments](#acknowledgments)
 
 ## The skills
 
@@ -186,3 +188,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) and the [Code of Conduct](CODE_OF_CONDUCT
 
 > Outputs are drafts. Review by a domain expert is recommended before any citation,
 > submission, or decision. Verify numbers, citations, and claims.
+
+## Acknowledgments
+
+Thanks to [linux.do](https://linux.do) — a vibrant tech community where this project is shared and discussed.
