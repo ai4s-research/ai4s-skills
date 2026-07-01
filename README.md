@@ -4,7 +4,11 @@
 
 **Open-source [Agent Skills](https://docs.claude.com/en/docs/claude-code/skills) for AI for Science** — turn a research direction or a concrete topic into topic exploration, literature surveys, runnable experiments, publication-grade papers & integrity audits, driven by any coding agent.
 
-<!-- Keep these links. Translations will automatically update with the README. -->
+<p align="center"><b>English</b> · <a href="README.zh.md">中文</a></p>
+
+<!--
+Multilingual links via zdoc are temporarily disabled (service returned 402 Insufficient Balance).
+Re-enable when zdoc is available again:
 <p align="center">
   <a href="https://zdoc.app/de/ai4s-research/ai4s-skills">Deutsch</a> |
   <a href="https://zdoc.app/en/ai4s-research/ai4s-skills">English</a> |
@@ -16,6 +20,7 @@
   <a href="https://zdoc.app/ru/ai4s-research/ai4s-skills">Русский</a> |
   <a href="https://zdoc.app/zh/ai4s-research/ai4s-skills">中文</a>
 </p>
+-->
 
 <p>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"></a>
