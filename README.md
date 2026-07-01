@@ -54,6 +54,29 @@ final-quality research artifacts.
   (measured / simulated / illustrative), and a permanent "human expert review
   recommended" attribution on every generated artifact.
 
+## What makes it different
+
+The "AI research agent" space is getting crowded. `ai4s-skills` is deliberately
+narrow and opinionated:
+
+- **The whole arc — including experiments _and_ an integrity audit.** Many suites
+  stop at literature review and writing (some explicitly never run experiments).
+  This one covers exploration → survey → runnable experiments → paper, and adds an
+  **integrity-auditor** that forensically checks papers for image reuse, numerical
+  anomalies, and logical gaps — authenticity as a first-class capability, not an
+  afterthought.
+- **Authenticity is the design axis, not a feature.** Every citation traces to a URL
+  the agent actually fetched; every number is labelled `measured` / `simulated` /
+  `illustrative` (simulated is never dressed up as measured); every run is
+  incremental, persisted, and resumable, so "done" means done — not a fabricated
+  finish. See [Authenticity by design](#authenticity-by-design).
+- **Depth over breadth.** Seven skills, each shipping detailed operational
+  references — bibliography-expansion discipline, publication-figure QA contracts,
+  4-level evidence grading — not thin wrappers around an API.
+- **No framework, no lock-in, MIT.** Pure markdown skills plus a few deterministic
+  tools — no orchestrator, daemon, database, or LLM SDK to install. Portable across
+  Claude Code, Cursor, Codex, and Aider, and free for commercial use.
+
 ## The 7 skills
 
 | Skill | Role | Primary output |
@@ -151,15 +174,20 @@ These are plain, single-purpose helpers the agent calls — not a runtime:
   kit (`style_kit.py`) + worked figure examples.
 - **`skills/mindmap-render/scripts/`** — `generate_mindmap.py` to render mindmaps.
 
-## Quality discipline (applies to every skill)
+## Authenticity by design
 
-| Principle | Requirement |
+Authenticity is enforced across every skill — it is the core of the project, not a
+checkbox:
+
+| Principle | What it means in practice |
 |---|---|
-| Real citations | Every BibTeX entry must trace to a URL the agent actually fetched — no citations from memory |
-| Real layout | `booktabs` tables, floats placed with `[!t]`, `~\cite{}` |
-| Real figures | Vector PDF, embedded fonts, explicit palettes — no 3-D bars / pie / rainbow |
-| Honest numbers | Every number labelled `measured` / `simulated` / `illustrative` |
-| Honest attribution | Generated artifacts carry a permanent "human expert review strongly recommended" note |
+| **Real citations** | Every BibTeX entry must trace to a URL the agent actually fetched this session — never from memory. |
+| **Real numbers** | Every number is labelled `measured` / `simulated` / `illustrative`; simulated data is never presented as measured. |
+| **Real experiments** | `experiment-suite` ships runnable code plus a `results.json` carrying provenance. Run it for real and measured results flow into the paper — the "simulated" disclosure drops automatically. |
+| **Faithful records** | Long tasks run incrementally, persist progress, and resume where they stopped — "done" is real completion, not a fabricated finish. |
+| **Real layout & figures** | `booktabs` tables, `[!t]` floats, `~\cite{}`; vector-PDF figures with embedded fonts and explicit palettes — no 3-D bars / pie / rainbow. |
+| **Honest attribution** | Every generated artifact permanently carries a "human expert review strongly recommended" note. |
+| **Auditable** | `integrity-auditor` turns these disciplines into a tool — checking any paper (yours or a third party's) for image / numerical / logical integrity issues, with graded evidence. |
 
 ## Contributing
 
