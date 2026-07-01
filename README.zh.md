@@ -21,6 +21,7 @@
 - [七个 skill](#七个-skill)
 - [如何衔接](#如何衔接)
 - [真实、可核验](#真实可核验)
+- [示例](#示例)
 - [安装](#安装)
 - [使用](#使用)
 - [仓库结构](#仓库结构)
@@ -72,6 +73,20 @@ integrity-auditor ──▶ 审计任意论文:外部 PDF / DOI / arXiv,或 [4] 
 | **发表级版式** | booktabs 表格、`[!t]` 浮动、`~\cite{}`;矢量 PDF 图,内嵌字体、指定配色。 |
 | **复核声明** | 每份生成文档都注明建议由领域专家复核。 |
 | **完整性检查** | `integrity-auditor` 检查论文的图像、数值、逻辑问题,并对证据分级。 |
+
+## 示例
+
+一次由 `experiment-suite` + `paper-writer` 端到端产出的完整案例:**《Learning the
+Burgers Solution Operator with a Fourier Neural Operator》** —— 一篇 8 页论文,背后是
+agent 亲手写并运行的代码。完整产物见 [`examples/fno-burgers/`](examples/fno-burgers/)(论文、代码、`results.json`、报告)。
+
+[<img src="assets/example-fno-burgers-p1.webp" width="360" alt="FNO / Burgers 论文首页">](examples/fno-burgers/paper.pdf)
+
+- **真代码、真运行** —— `model.py` 是一个 1-D FNO;完整实验在笔记本 CPU 上约 20 分钟跑完。
+- **实测结果** —— FNO 6.67% rel-L2,优于 MLP 22.47%、CNN 68.12%(3 seeds);零样本超分辨率在 128→1024 网格上稳定于 6.7–8.1%。
+- **真引用** —— 22 条参考文献,每条都可追溯来源。
+
+所有数字均为 `measured`(provenance 见 `results.json`);论文已注明系 AI 生成,并建议由领域专家复核。
 
 ## 安装
 

@@ -23,6 +23,7 @@ audits, with every citation, number, and figure traceable to its source.
 - [The skills](#the-skills)
 - [How they connect](#how-they-connect)
 - [Authenticity](#authenticity)
+- [Example](#example)
 - [Install](#install)
 - [Usage](#usage)
 - [Repository layout](#repository-layout)
@@ -76,6 +77,22 @@ The focus of the project. Every skill enforces:
 | **Publication layout** | booktabs tables, `[!t]` floats, `~\cite{}`; vector-PDF figures with embedded fonts and defined color palettes. |
 | **Review disclosure** | Every generated document states that domain-expert review is recommended. |
 | **Integrity checks** | `integrity-auditor` inspects a paper for image, numerical, and logical problems and grades the evidence. |
+
+## Example
+
+A complete run from `experiment-suite` + `paper-writer`: **"Learning the Burgers
+Solution Operator with a Fourier Neural Operator"** — an 8-page paper backed by code
+the agent wrote and ran. Full artifact in [`examples/fno-burgers/`](examples/fno-burgers/)
+(paper, code, `results.json`, report).
+
+[<img src="assets/example-fno-burgers-p1.webp" width="360" alt="First page of the FNO / Burgers paper">](examples/fno-burgers/paper.pdf)
+
+- **Real code, really run** — `model.py` is a 1-D FNO; the full study runs in ~20 min on a laptop CPU.
+- **Measured results** — FNO 6.67% rel-L2 vs MLP 22.47% and CNN 68.12% (3 seeds); zero-shot super-resolution holds 6.7–8.1% from grid 128 to 1024.
+- **Real citations** — 22 references, each traceable to its source.
+
+Every number is `measured` (provenance in `results.json`); the paper states it was
+AI-generated and recommends domain-expert review.
 
 ## Install
 

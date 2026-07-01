@@ -1,0 +1,37 @@
+# Experiment configuration — 1D Burgers operator learning
+pde:
+  equation: viscous_burgers        # u_t + u u_x = nu u_xx, periodic on [0,1)
+  viscosity: 0.001
+  final_time: 1.0
+  solver: pseudo_spectral_IFRK4
+  solver_steps: 2000
+
+data:
+  grid: 128
+  n_train: 1000
+  n_val: 200
+  n_test: 200
+  ic_prior: gaussian_random_field   # tau=7, alpha=2.5
+  seed_train_base: 100              # per-seed train set = seed_train_base + seed
+  seed_val: 43
+  seed_test: 44
+
+model:
+  fno:  {modes: 16, width: 32, n_layers: 4}
+  mlp:  {hidden: 512, depth: 4}
+  cnn:  {width: 64, depth: 4, kernel: 5}
+
+train:
+  epochs: 50
+  batch_size: 20
+  lr: 0.001
+  weight_decay: 0.0001
+  scheduler: cosine
+  loss: relative_l2
+  seeds: [0, 1, 2]
+  device: cpu
+
+ablations:
+  fourier_modes: [4, 8, 12, 16]
+  train_size: [200, 500, 1000]
+  super_resolution_grids: [128, 256, 512, 1024]
