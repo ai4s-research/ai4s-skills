@@ -148,6 +148,10 @@ BASE_UNITS: list[tuple[str, str, float]] = sorted([
     ("JPY", "currency", 1.0),
 ], key=lambda x: -len(x[0]))
 
+# Dimensional power of each base unit: an SI prefix on a squared/cubed unit
+# scales by prefix**power (1 mm2 = (1e-3)^2 m2, 1 cm3 = (1e-2)^3 m3).
+UNIT_POWER = {"m2": 2, "m3": 3}
+
 
 def parse_unit(u: str) -> tuple[str | None, float | None]:
     """Parse a unit token to (family, factor) where factor converts to the family's canonical base.
@@ -164,7 +168,8 @@ def parse_unit(u: str) -> tuple[str | None, float | None]:
             prefix = u[: -len(sym)] if sym else u
             # Strict matching of the prefix
             if prefix in SI_PREFIXES_WITH_MILLI:
-                return (family, SI_PREFIXES_WITH_MILLI[prefix] * base_factor)
+                power = UNIT_POWER.get(sym, 1)
+                return (family, SI_PREFIXES_WITH_MILLI[prefix] ** power * base_factor)
     return (None, None)
 
 
