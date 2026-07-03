@@ -26,6 +26,12 @@ fi
 mkdir -p "$DEST"
 installed=0
 for n in "${names[@]}"; do
+  # Reject empty or path-like names: "" would expand to "$DEST/" and rm -rf
+  # the whole skills directory; "../x" would escape it.
+  if [ -z "$n" ] || [[ "$n" == */* ]]; then
+    echo "  ✗ '$n' (invalid skill name — skipped)"
+    continue
+  fi
   if [ -d "$SRC/$n" ]; then
     rm -rf "${DEST:?}/$n"
     cp -R "$SRC/$n" "$DEST/$n"
