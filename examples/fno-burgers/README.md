@@ -18,12 +18,12 @@ Test relative-L2 on the 1-D viscous Burgers operator (mean over 3 seeds, CPU):
 
 | Model | Rel. L2 | Params |
 |---|---|---|
-| **FNO** | **6.67%** | 74k |
-| MLP | 22.47% | 657k |
-| CNN | 68.12% | 42k |
+| **FNO** | **4.41%** | 74k |
+| MLP | 21.63% | 657k |
+| CNN | 67.69% | 42k |
 
-Zero-shot super-resolution (FNO trained at grid 128): error stays 6.7–8.1% at
-256 / 512 / 1024 — the discretisation-invariance property. Total run: ~20 min on a
+Zero-shot super-resolution (FNO trained at grid 128): error stays 4.2–4.7% at
+256 / 512 / 1024 — the discretisation-invariance property. Total run: ~35 min on a
 laptop CPU. No external dataset (ground truth from a pseudo-spectral solver).
 
 ## Reproduce

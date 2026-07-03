@@ -42,8 +42,9 @@ diffusion, so the operator is genuinely nonlinear and non-trivial to approximate
 
 Self-generated ground truth (see `data_contract.md`). Initial conditions are drawn
 from a Gaussian random field; the PDE is integrated with a pseudo-spectral
-integrating-factor RK4 solver (2000 steps), which treats the stiff diffusion term
-exactly and is stable at this viscosity. 1000 training / 200 validation / 200 test
+integrating-factor RK4 solver run on a fine grid (≥ 1024, 4×grid steps) and
+spectrally restricted to the target grid, which treats the stiff diffusion term
+exactly and keeps the shock fronts resolved at this viscosity. 1000 training / 200 validation / 200 test
 functions at grid 128; test sets are additionally regenerated at 256/512/1024 for
 the super-resolution probe. No external dataset is used, which makes the whole study
 reproducible bit-for-bit from the seeds.

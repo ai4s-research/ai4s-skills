@@ -82,12 +82,42 @@ def solve_burgers(u0: np.ndarray, nu: float = 1e-2, T: float = 1.0,
     return np.fft.ifft(uh, axis=1).real
 
 
+def spectral_prolong(u: np.ndarray, n_fine: int) -> np.ndarray:
+    """Exactly interpolate a periodic field to a finer grid by Fourier zero-padding."""
+    n = u.shape[1]
+    uh = np.fft.fft(u, axis=1)
+    m = n // 2
+    uh_f = np.zeros((u.shape[0], n_fine), dtype=complex)
+    uh_f[:, :m] = uh[:, :m]
+    uh_f[:, -m:] = uh[:, -m:]
+    return np.fft.ifft(uh_f, axis=1).real * (n_fine / n)
+
+
+def spectral_restrict(u: np.ndarray, n_coarse: int) -> np.ndarray:
+    """Sample a periodic field onto a coarser grid by Fourier truncation."""
+    n = u.shape[1]
+    uh = np.fft.fft(u, axis=1)
+    m = n_coarse // 2
+    uh_c = np.concatenate([uh[:, :m], uh[:, -m:]], axis=1) * (n_coarse / n)
+    return np.fft.ifft(uh_c, axis=1).real
+
+
 def make_dataset(n_samples: int, grid: int, seed: int, nu: float = 1e-2,
                  T: float = 1.0) -> tuple[np.ndarray, np.ndarray]:
-    """Return (inputs u0, targets uT), both (n_samples, grid), float32."""
+    """Return (inputs u0, targets uT), both (n_samples, grid), float32.
+
+    The PDE is always solved on a fine grid (>= 1024, and >= 2*grid) and the
+    result restricted back, so the targets stay resolved even when nu is small:
+    at nu=1e-3 the viscous shock width (~4*nu/du ~ 2e-3) is below the 128-grid
+    spacing, and solving directly at `grid` would bake ~6% rel-L2 of Gibbs
+    ringing into the "ground truth" (verified against a 2048-grid reference).
+    """
     rng = np.random.default_rng(seed)
     u0 = grf_initial_conditions(n_samples, grid, rng)
-    uT = solve_burgers(u0, nu=nu, T=T)
+    fine = max(1024, 2 * grid)
+    n_steps = 4 * fine  # ~2x the dealiased advective CFL bound at |u|~2.5
+    uT_fine = solve_burgers(spectral_prolong(u0, fine), nu=nu, T=T, n_steps=n_steps)
+    uT = spectral_restrict(uT_fine, grid)
     return u0.astype(np.float32), uT.astype(np.float32)
 
 

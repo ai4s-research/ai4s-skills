@@ -103,8 +103,8 @@ the agent wrote and ran. Full artifact in [`examples/fno-burgers/`](examples/fno
 <sub><i>The 8-page paper (first 6 pages) — click any page for the full PDF.</i></sub>
 </div>
 
-- **Real code, really run** — `model.py` is a 1-D FNO; the full study runs in ~20 min on a laptop CPU.
-- **Measured results** — FNO 6.67% rel-L2 vs MLP 22.47% and CNN 68.12% (3 seeds); zero-shot super-resolution holds 6.7–8.1% from grid 128 to 1024.
+- **Real code, really run** — `model.py` is a 1-D FNO; the full study runs in ~35 min on a laptop CPU.
+- **Measured results** — FNO 4.41% rel-L2 vs MLP 21.63% and CNN 67.69% (3 seeds); zero-shot super-resolution holds 4.2–4.7% from grid 128 to 1024.
 - **Real citations** — 22 references, each traceable to its source.
 
 Every number is `measured` (provenance in `results.json`); the paper states it was

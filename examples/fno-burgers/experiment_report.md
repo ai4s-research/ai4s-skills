@@ -23,7 +23,9 @@ Full rationale: `experiment_design.md`. Data binding: `data_contract.md`.
 
 ## 3. Method
 Ground truth: pseudo-spectral integrating-factor RK4 solver (2/3-rule dealiasing),
-2000 time steps to `T = 1`. Initial conditions from a Gaussian random field. FNO:
+integrated to `T = 1` on a fine grid (≥ 1024 and ≥ 2× the target grid, 4×grid time
+steps) and spectrally restricted to the target grid, so targets stay fully resolved
+at `ν = 1e-3`. Initial conditions from a Gaussian random field. FNO:
 16 modes, width 32, 4 Fourier layers, with an `(u₀, x)` lifting. All models
 minimise mean relative-L2 error with Adam (lr 1e-3, cosine decay, weight decay
 1e-4), 50 epochs, batch 20. Code: `experiment/{data,model,train,run_all}.py`.
@@ -32,35 +34,35 @@ minimise mean relative-L2 error with Adam (lr 1e-3, cosine decay, weight decay
 1000 train / 200 val / 200 test functions at grid 128; test sets regenerated at
 256/512/1024 for the super-resolution probe. Main comparison over 3 seeds
 (resampled training data); ablations single-seed. Hardware: laptop CPU, PyTorch
-2.5.1. Total wall-clock: ~1235 s (~20 min).
+2.5.1. Total wall-clock: ~2072 s (~35 min).
 
 ## 5. Results
 
 ### 5.1 Accuracy (3 seeds, mean ± std) — `fig2_comparison`, `fig1_qualitative`
 | Model | Test rel-L2 (%) | Params |
 |---|---|---|
-| **FNO** | **6.67 ± 0.07** | 74,209 |
-| MLP | 22.47 ± 0.59 | 657,024 |
-| CNN | 68.12 ± 0.16 | 41,793 |
+| **FNO** | **4.41 ± 0.13** | 74,209 |
+| MLP | 21.63 ± 0.53 | 657,024 |
+| CNN | 67.69 ± 0.18 | 41,793 |
 
-The FNO is **3.4× more accurate than the MLP and 10.2× more accurate than the CNN**,
+The FNO is **4.9× more accurate than the MLP and 15.3× more accurate than the CNN**,
 with ~9× fewer parameters than the MLP. Qualitatively (`fig1_qualitative`), the FNO
 reproduces the shock front; both baselines concentrate their error there.
 
 ### 5.2 Discretisation invariance (zero-shot super-resolution) — `fig3_superres`
 | Eval grid | 128 | 256 | 512 | 1024 |
 |---|---|---|---|---|
-| FNO rel-L2 (%) | 6.74 | 7.85 | 8.09 | 7.18 |
-| CNN rel-L2 (%) | 67.9 | 74.4 | 74.0 | 72.7 |
+| FNO rel-L2 (%) | 4.59 | 4.72 | 4.48 | 4.15 |
+| CNN rel-L2 (%) | 67.4 | 74.3 | 73.9 | 72.6 |
 
-An FNO trained only at grid 128 stays in a narrow 6.7–8.1% band with **no blow-up**
+An FNO trained only at grid 128 stays in a narrow 4.2–4.7% band with **no blow-up**
 as the grid is refined 8×. The CNN stays an order of magnitude worse; the MLP cannot
 be evaluated at all (grid-locked first layer).
 
 ### 5.3 Ablations (single seed — trends) — `fig4_ablation`
-- **Fourier modes** 4 → 16: 8.10% → 6.84% → 6.69% → 6.74% (improves, then saturates
+- **Fourier modes** 4 → 16: 6.13% → 4.64% → 4.56% → 4.59% (improves, then saturates
   once modes cover the active band).
-- **Training size** 200/500/1000: 12.01% → 8.45% → 6.74% (monotone improvement).
+- **Training size** 200/500/1000: 10.43% → 6.25% → 4.59% (monotone improvement).
 
 ## 6. Analysis
 Both FNO claims hold on this benchmark. The accuracy gap over the CNN isolates the

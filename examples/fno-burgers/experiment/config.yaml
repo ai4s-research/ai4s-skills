@@ -4,7 +4,8 @@ pde:
   viscosity: 0.001
   final_time: 1.0
   solver: pseudo_spectral_IFRK4
-  solver_steps: 2000
+  solver_fine_grid: max(1024, 2*grid)   # solve resolved, then spectrally restrict
+  solver_steps: 4*fine_grid
 
 data:
   grid: 128
