@@ -1658,7 +1658,25 @@ def build_html(
     resolved_theme_key = theme_key if theme_key in THEMES else DEFAULT_THEME
     theme = THEMES[resolved_theme_key]
     layout_config = resolve_layout_config(theme, layout_distribution)
-    md_html = html_module.escape(markdown_text)
+    # markmap-autoloader@0.17.2 reads render options ONLY from the markdown's
+    # `markmap:` frontmatter (deriveOptions(frontmatter.markmap)); it has no
+    # data-markmap / dataset support. Final node colors come from the skill's
+    # own post-processing (applyFamilyShading + theme CSS), so only geometry
+    # options are injected — injecting markmap `color` here would be redundant
+    # and could regress themed output. These lines contain no HTML-special
+    # characters, so html.escape() leaves the frontmatter intact.
+    markmap_frontmatter = (
+        "---\n"
+        "markmap:\n"
+        "  duration: 0\n"
+        "  spacingVertical: 48\n"
+        "  spacingHorizontal: 90\n"
+        "  maxWidth: 520\n"
+        "  paddingX: 14\n"
+        "  paddingY: 10\n"
+        "---\n\n"
+    )
+    md_html = html_module.escape(markmap_frontmatter + markdown_text)
     safe_title = html_module.escape(title, quote=True)
     custom_css = theme.get("custom_css", "")
     md_file_js = html_module.escape(md_filename) if md_filename else ""
@@ -1682,20 +1700,6 @@ def build_html(
         markmap_script_urls_json=json.dumps(MARKMAP_SCRIPT_URLS),
         js_helpers=JS_HELPERS,
     )
-    options_json = json.dumps(
-        {
-            "duration": 0,
-            "spacingVertical": 48,
-            "spacingHorizontal": 90,
-            "maxWidth": 520,
-            "paddingX": 14,
-            "paddingY": 10,
-            "color": theme["colors"],
-            "colorFreezeLevel": 1,
-        },
-        ensure_ascii=False,
-    )
-    html = html.replace('id="target-markmap"', f'data-markmap=\'{options_json}\'')
     return html
 
 
