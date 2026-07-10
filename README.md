@@ -10,6 +10,7 @@ audits, with every citation, number, and figure traceable to its source.
 
 <p>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"></a>
+  <a href="https://doi.org/10.5281/zenodo.21297455"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.21297455.svg" alt="DOI"></a>
   <img src="https://img.shields.io/badge/skills-7-success" alt="7 skills">
   <a href="http://makeapullrequest.com"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"></a>
   <a href="https://linux.do"><img src="https://img.shields.io/badge/Join-linux.do-orange" alt="linux.do"></a>

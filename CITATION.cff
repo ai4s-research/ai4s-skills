@@ -5,6 +5,7 @@ type: software
 authors:
   - name: "The AI4S Skills Contributors"
 repository-code: "https://github.com/ai4s-research/ai4s-skills"
+doi: "10.5281/zenodo.21297455"
 license: MIT
 version: 0.1.0
 date-released: "2026-07-10"
