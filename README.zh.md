@@ -172,6 +172,24 @@ skill 调用的、单一职责的小脚本。每个目录都有各自的 `requir
 
 详见 [CONTRIBUTING.md](CONTRIBUTING.md) 与 [行为准则](CODE_OF_CONDUCT.md)。
 
+## 引用
+
+如果 AI4S Skills 对你的研究有帮助,请如下引用:
+
+```bibtex
+@software{ai4s_skills,
+  author  = {{The AI4S Skills Contributors}},
+  title   = {AI4S Skills: open-source agent skills for AI for Science},
+  year    = {2026},
+  version = {0.1.0},
+  doi     = {10.5281/zenodo.21297455},
+  url     = {https://github.com/ai4s-research/ai4s-skills},
+  license = {MIT}
+}
+```
+
+上面的 DOI 指向全部版本;仓库页顶部的 **"Cite this repository"** 按钮(由 [`CITATION.cff`](./CITATION.cff) 生成)提供 APA 与 BibTeX 两种格式。
+
 ## 许可证
 
 [MIT](LICENSE)。

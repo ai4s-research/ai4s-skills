@@ -183,6 +183,26 @@ A new skill needs:
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) and the [Code of Conduct](CODE_OF_CONDUCT.md).
 
+## Citation
+
+If you use AI4S Skills in your research, please cite it:
+
+```bibtex
+@software{ai4s_skills,
+  author  = {{The AI4S Skills Contributors}},
+  title   = {AI4S Skills: open-source agent skills for AI for Science},
+  year    = {2026},
+  version = {0.1.0},
+  doi     = {10.5281/zenodo.21297455},
+  url     = {https://github.com/ai4s-research/ai4s-skills},
+  license = {MIT}
+}
+```
+
+The DOI above cites all versions; GitHub's **"Cite this repository"** button
+(generated from [`CITATION.cff`](./CITATION.cff)) provides the same reference
+in APA and BibTeX.
+
 ## License
 
 [MIT](LICENSE).
