@@ -14,9 +14,9 @@ The pattern below is not optional. It is the only way the skill is feasible.
 
 Every intermediate result is written to disk **immediately**, not held in the conversation. Specifically:
 
-- Each new BibTeX entry → appended to `output/<slug>/latest/paper/bibliography.bib` the moment it's extracted from a WebSearch result, not after all queries finish.
-- Each rewritten section → written to `output/<slug>/latest/paper/sections/<name>.tex` the moment it's drafted, not after all 7 are drafted.
-- Each generated figure → committed to `output/<slug>/latest/paper/figures/fig_NN_<name>.pdf` and the matching script saved alongside.
+- Each new BibTeX entry → appended to `output/paper-writer/<slug>/latest/paper/bibliography.bib` the moment it's extracted from a WebSearch result, not after all queries finish.
+- Each rewritten section → written to `output/paper-writer/<slug>/latest/paper/sections/<name>.tex` the moment it's drafted, not after all 7 are drafted.
+- Each generated figure → committed to `output/paper-writer/<slug>/latest/paper/figures/fig_NN_<name>.pdf` and the matching script saved alongside.
 
 Why: if the conversation context fills, the agent crashes, or the user asks a sideways question, **the files survive**. Resumption reads the files and continues.
 
@@ -25,9 +25,9 @@ Why: if the conversation context fills, the agent crashes, or the user asks a si
 You measure how far you are by counting files / `grep`-ing artefacts:
 
 ```bash
-grep -c "^@" output/<slug>/latest/paper/bibliography.bib                         # bib entries so far
-ls output/<slug>/latest/paper/figures/*.pdf | wc -l                              # figures so far
-for f in output/<slug>/latest/paper/sections/*.tex; do
+grep -c "^@" output/paper-writer/<slug>/latest/paper/bibliography.bib                         # bib entries so far
+ls output/paper-writer/<slug>/latest/paper/figures/*.pdf | wc -l                              # figures so far
+for f in output/paper-writer/<slug>/latest/paper/sections/*.tex; do
   echo "$(basename "$f"): $(wc -w < "$f") words"
 done                                                                # per-section drafted size
 ```
@@ -66,7 +66,7 @@ for q in query_plan:
     for r in extract_real_papers(results):
         norm = normalize_title(r.title)
         if norm in seen_titles: continue
-        append_bibtex(r, output/<slug>/latest/paper/bibliography.bib)
+        append_bibtex(r, output/paper-writer/<slug>/latest/paper/bibliography.bib)
         seen_titles.add(norm)
     append(.bib_progress, q)                # persist that this query was done
     n_entries = grep -c "^@" bibliography.bib
@@ -75,7 +75,7 @@ for q in query_plan:
 
 Concretely as a Claude Code workflow, this loop is **one WebSearch + one Bash append per turn** for ~20 turns:
 
-1. Turn 1: WebSearch query #1, parse results, write 6 new entries to `bibliography.bib` via Edit/Write tool. Also append the query string to a tiny progress note (e.g., `output/<slug>/latest/paper/.bib_progress.txt`) so a future run knows to skip it.
+1. Turn 1: WebSearch query #1, parse results, write 6 new entries to `bibliography.bib` via Edit/Write tool. Also append the query string to a tiny progress note (e.g., `output/paper-writer/<slug>/latest/paper/.bib_progress.txt`) so a future run knows to skip it.
 2. Turn 2: count current bib entries, pick query #2, repeat.
 3. … through query #20+, until count ≥ target.
 
@@ -88,9 +88,9 @@ Order: intro → related → method → experiment → results → conclusion �
 For each section:
 
 1. Read `references/03-section-playbook.md` rules for that section (open it fresh — don't trust a cached recollection).
-2. Read `output/<slug>/latest/paper/bibliography.bib` and pick 8–30 real keys relevant to this section.
+2. Read `output/paper-writer/<slug>/latest/paper/bibliography.bib` and pick 8–30 real keys relevant to this section.
 3. Draft the section in one go (one section is 400–1200 words; a single LLM turn can comfortably produce that).
-4. **Immediately** Write the result to `output/<slug>/latest/paper/sections/<name>.tex`.
+4. **Immediately** Write the result to `output/paper-writer/<slug>/latest/paper/sections/<name>.tex`.
 5. Compile (`pdflatex` once + `bibtex` + `pdflatex` × 2). Check `main.log` for new undefined citations or LaTeX errors.
 6. Fix any errors before moving to the next section.
 
@@ -106,8 +106,8 @@ For each figure (4–8 total):
 
 1. Open `references/02-figures-publication-grade.md` for the family that fits this figure (TikZ vs. matplotlib vs. seaborn vs. multi-panel).
 2. Decide: what does this figure *answer* in the paper? Write the answer down (you'll use it as caption).
-3. Write the figure script as `output/<slug>/latest/paper/figures/make_fig_NN_<slug>.py` (or inline TikZ inside `sections/<name>.tex`).
-4. Run the script: `cd output/<slug>/latest/paper/figures && python make_fig_NN_<slug>.py`.
+3. Write the figure script as `output/paper-writer/<slug>/latest/paper/figures/make_fig_NN_<slug>.py` (or inline TikZ inside `sections/<name>.tex`).
+4. Run the script: `cd output/paper-writer/<slug>/latest/paper/figures && python make_fig_NN_<slug>.py`.
 5. Verify the PDF exists and is non-trivial: `test -s fig_NN_<slug>.pdf`.
 6. Reference it from the appropriate section with a caption.
 7. Recompile and check.
@@ -117,7 +117,7 @@ For each figure (4–8 total):
 User comes back, says "continue the paper". You don't remember what's done. Don't assume — check the filesystem:
 
 ```bash
-cd output/paper
+cd output/paper-writer/<slug>/latest/paper
 
 # Where are we on bib?
 grep -c "^@" bibliography.bib                              # current entry count
@@ -149,7 +149,7 @@ When updating `bibliography.bib` or any other file, Write it whole rather than s
 
 ## Checkpoint files
 
-Keep three small bookkeeping files in `output/<slug>/latest/paper/`:
+Keep three small bookkeeping files in `output/paper-writer/<slug>/latest/paper/`:
 
 - `.bib_progress.txt` — one line per executed WebSearch query string. Read on resume.
 - `.section_progress.txt` — one line per drafted section name. Read on resume.
@@ -159,7 +159,7 @@ These are tiny (< 1 KB total) and let any future turn instantly know what's done
 
 ```bash
 # Mark a query done after extracting + writing entries
-echo "transformer time series Informer Autoformer" >> output/<slug>/latest/paper/.bib_progress.txt
+echo "transformer time series Informer Autoformer" >> output/paper-writer/<slug>/latest/paper/.bib_progress.txt
 ```
 
 ## Sanity check before delivery
@@ -168,19 +168,19 @@ Before you tell the user "the paper is done", verify all three invariants held:
 
 ```bash
 # Invariant 1 — files are the source of truth
-ls -la output/<slug>/latest/paper/sections/                              # all 7 .tex files non-trivial?
-ls -la output/<slug>/latest/paper/figures/*.pdf                          # 4+ figure PDFs present?
-test -s output/<slug>/latest/paper/main.pdf                              # final PDF non-empty?
+ls -la output/paper-writer/<slug>/latest/paper/sections/                              # all 7 .tex files non-trivial?
+ls -la output/paper-writer/<slug>/latest/paper/figures/*.pdf                          # 4+ figure PDFs present?
+test -s output/paper-writer/<slug>/latest/paper/main.pdf                              # final PDF non-empty?
 
 # Invariant 2 — observable progress matches target
-grep -c "^@" output/<slug>/latest/paper/bibliography.bib                 # ≥ 200
-total=0; for f in output/<slug>/latest/paper/sections/*.tex; do
+grep -c "^@" output/paper-writer/<slug>/latest/paper/bibliography.bib                 # ≥ 200
+total=0; for f in output/paper-writer/<slug>/latest/paper/sections/*.tex; do
   total=$((total + $(grep -o "\\\\cite{" "$f" | wc -l)))
 done
 echo "TOTAL cites: $total"                                 # ≥ 60
 
 # Invariant 3 — each batch was atomic; checkpoints align with files
-wc -l output/<slug>/latest/paper/.bib_progress.txt                       # roughly matches the # of queries you intended
+wc -l output/paper-writer/<slug>/latest/paper/.bib_progress.txt                       # roughly matches the # of queries you intended
 ```
 
 If any of these surprise you, stop and reconcile before declaring done.
@@ -191,6 +191,6 @@ If any of these surprise you, stop and reconcile before declaring done.
 - [ ] Sections written **one per turn** in the recommended order, each Write'd to disk before moving on.
 - [ ] Figures generated **one per turn**, script saved alongside the PDF.
 - [ ] Three checkpoint files maintained: `.bib_progress.txt`, `.section_progress.txt`, `.figure_progress.txt`.
-- [ ] Resume strategy: `cd output/paper && grep -c "^@" bibliography.bib && for f in sections/*.tex; do wc -w < "$f"; done`.
+- [ ] Resume strategy: `cd output/paper-writer/<slug>/latest/paper && grep -c "^@" bibliography.bib && for f in sections/*.tex; do wc -w < "$f"; done`.
 - [ ] Compile + verify after each major artefact, not only at the end.
 - [ ] Never tried to "do it all in one turn".

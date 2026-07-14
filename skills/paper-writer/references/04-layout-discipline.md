@@ -15,7 +15,7 @@ A bare `\begin{tabular}` in body text gets the wrong placement, no caption, no l
   \centering
   \small                                  % font
   \setlength{\tabcolsep}{4pt}             % column padding
-  \caption{One-sentence standalone description.}
+  \caption{Forecast MSE across four benchmarks. Numbers are simulated.}
   \label{tab:main}
   \begin{tabular}{l c c c c}
     \toprule
@@ -24,11 +24,16 @@ A bare `\begin{tabular}` in body text gets the wrong placement, no caption, no l
     DLinear~\cite{zeng2023dlinear} & 0.382 & 0.166 & 0.434 & 0.241 \\
     PatchTST~\cite{nie2023patchtst} & 0.366 & 0.158 & 0.412 & 0.227 \\
     \midrule
-    \textbf{Ours} & \textbf{0.354} & \textbf{0.149} & \textbf{0.402} & \textbf{0.220} \\
+    Ours & 0.354 & 0.149 & 0.402 & 0.220 \\
     \bottomrule
   \end{tabular}
 \end{table}
 ```
+
+Two things in this example are provenance-conditional, per `06-experiment-provenance.md` — get them from `results.json`, don't default to what looks best:
+
+- **The caption's disclosure clause** ("Numbers are simulated.") — present whenever `results.json` has `"simulated": true`; drop it (optionally naming the real data source instead) only when the numbers are actually measured.
+- **Bolding the winning row** — the template above leaves `Ours` unbolded because the default run mode is simulated, and a bolded win over comparisons you also made up asserts an empirical victory that didn't happen. Only bold when `results.json` is measured (`"simulated": false`) and `Ours` genuinely has the best number in that column.
 
 ### Float placement
 
@@ -111,8 +116,8 @@ If you `\label{eq:patch}`, refer to it later with `Eq.~\ref{eq:patch}`. Same for
 Search:
 
 ```bash
-grep -oE '\\label\{[^}]+\}' output/<slug>/latest/paper/sections/*.tex | sort -u > /tmp/labels.txt
-grep -oE '\\ref\{[^}]+\}' output/<slug>/latest/paper/sections/*.tex | sort -u > /tmp/refs.txt
+grep -oE '\\label\{[^}]+\}' output/paper-writer/<slug>/latest/paper/sections/*.tex | sort -u > /tmp/labels.txt
+grep -oE '\\ref\{[^}]+\}' output/paper-writer/<slug>/latest/paper/sections/*.tex | sort -u > /tmp/refs.txt
 diff /tmp/labels.txt /tmp/refs.txt
 ```
 
@@ -222,7 +227,7 @@ Use the banner sparingly — the `\thanks` footnote is enough for normal cases.
 After any compile:
 
 ```bash
-cd output/paper
+cd output/paper-writer/<slug>/latest/paper
 grep -E "Citation .* undefined" main.log    # must be empty
 grep -E "Reference .* undefined" main.log   # must be empty
 grep -E "Overfull|Underfull" main.log | head # should be near-empty

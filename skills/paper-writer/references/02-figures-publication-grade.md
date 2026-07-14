@@ -99,7 +99,7 @@ Use matplotlib for line charts, bar charts, scatter plots, error bars. The defau
 
 ### Plot script template
 
-Save as `output/<slug>/latest/paper/figures/make_fig_NN_<name>.py` so the figure is reproducible:
+Save as `output/paper-writer/<slug>/latest/paper/figures/make_fig_NN_<name>.py` so the figure is reproducible:
 
 ```python
 """Generate fig_NN_<name>.pdf — publication-grade matplotlib output."""
@@ -165,7 +165,7 @@ plt.savefig("fig_02_horizon_sweep.pdf")
 plt.close(fig)
 ```
 
-Run: `cd output/<slug>/latest/paper/figures && python make_fig_02_horizon_sweep.py`.
+Run: `cd output/paper-writer/<slug>/latest/paper/figures && python make_fig_02_horizon_sweep.py`.
 
 ### Sizing — column vs page width
 
@@ -201,11 +201,17 @@ import numpy as np
 datasets = ["ETTh1", "ETTh2", "ETTm1", "ETTm2", "ECL", "Traffic", "Weather"]
 methods  = ["DLinear", "Informer", "Autoformer", "FEDformer",
             "PatchTST", "iTrans", "Ours"]
+# One row per dataset, one column per method — shape must be (len(datasets), len(methods)).
 mse = np.array([
-    [0.380, 0.495, 0.421, 0.401, 0.366, 0.359, 0.354],
-    [0.394, 0.523, 0.439, 0.411, 0.371, 0.364, 0.358],
-    # ...
+    [0.380, 0.495, 0.421, 0.401, 0.366, 0.359, 0.354],  # ETTh1
+    [0.394, 0.523, 0.439, 0.411, 0.371, 0.364, 0.358],  # ETTh2
+    [0.352, 0.470, 0.402, 0.388, 0.349, 0.342, 0.337],  # ETTm1
+    [0.361, 0.481, 0.410, 0.395, 0.356, 0.349, 0.343],  # ETTm2
+    [0.310, 0.428, 0.365, 0.351, 0.318, 0.312, 0.305],  # ECL
+    [0.402, 0.512, 0.447, 0.430, 0.389, 0.381, 0.372],  # Traffic
+    [0.335, 0.452, 0.388, 0.374, 0.339, 0.331, 0.324],  # Weather
 ])
+assert mse.shape == (len(datasets), len(methods)), "row/column count must match the labels"
 
 fig, ax = plt.subplots(figsize=(4.4, 3.2))
 sns.heatmap(
@@ -229,6 +235,7 @@ plt.close(fig)
 - Annotate cells only when there are ≤ 70 cells; beyond that the text becomes noise.
 - Set tick rotation to keep labels readable.
 - Cell borders white at 0.4pt — separates cells without dominating.
+- **Known trap: `annot=True` can silently annotate only the first row.** This is a real `seaborn==0.12.x` + recent-matplotlib incompatibility, not a script error — it produces a heatmap that saves without any exception, so nothing in the compile/gate pipeline catches it, only looking at the render does. If you see numbers on row 1 only, `pip show seaborn` and upgrade (`pip install -U seaborn`, tested working on `0.13.2`) rather than debugging your own data or annot_kws — the array and call were fine.
 
 ## Family 4 — Multi-panel & advanced
 
@@ -237,6 +244,17 @@ When one figure can't carry the message, use multi-panel layouts. Common pattern
 ### 2×2 panel (matplotlib)
 
 ```python
+import numpy as np
+import matplotlib.pyplot as plt
+# Apply the sans-serif Nature preamble from Family 2 above.
+
+panels = [
+    ("Loss curve", np.linspace(1.2, 0.3, 50) + np.random.normal(0, 0.02, 50)),
+    ("Ablation: no decomp head", np.linspace(1.3, 0.42, 50) + np.random.normal(0, 0.02, 50)),
+    ("Ablation: no patching", np.linspace(1.25, 0.47, 50) + np.random.normal(0, 0.02, 50)),
+    ("Full model", np.linspace(1.2, 0.28, 50) + np.random.normal(0, 0.02, 50)),
+]
+
 fig, axes = plt.subplots(2, 2, figsize=(6.8, 4.8), sharex=True)
 for ax, (title, data) in zip(axes.flat, panels):
     ax.plot(data)

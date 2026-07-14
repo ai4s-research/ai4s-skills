@@ -1,7 +1,9 @@
 % =================================================================
 % RESEARCH PAPER TEMPLATE
 % =================================================================
-% Two-column layout for conference/journal submission
+% Single-column layout (article class, no twocolumn option). The
+% references (02, 04) build figure/table sizing on this premise —
+% don't reach for figure*/table* here, they gain no extra width.
 % =================================================================
 
 \documentclass[10pt,a4paper]{article}
@@ -12,8 +14,6 @@
 % convention while body text stays serif (familydefault unchanged).
 \usepackage[scaled]{helvet}
 \usepackage[a4paper, margin=0.8in]{geometry}
-\setlength{\columnsep}{0.25in}
-\setlength{\columnseprule}{0pt}
 \usepackage[numbers,sort&compress]{natbib}
 \usepackage{hyperref}
 \usepackage{booktabs}

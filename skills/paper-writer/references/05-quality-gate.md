@@ -11,7 +11,7 @@ The gate is bright-line. Do not soften the targets to ship.
 ### G1 · PDF compiles cleanly
 
 ```bash
-cd output/paper
+cd output/paper-writer/<slug>/latest/paper
 pdflatex -interaction=nonstopmode main.tex >/dev/null 2>&1
 bibtex main >/dev/null 2>&1
 pdflatex -interaction=nonstopmode main.tex >/dev/null 2>&1
@@ -205,21 +205,26 @@ Open `sections/conclusion.tex` and verify a limitations paragraph exists. A conc
 
 ### S5 · Figures look right
 
-Open `main.pdf` visually. For each figure:
+Grep can confirm a figure compiled; it can't confirm a figure is *right* — a heatmap that silently renders with annotations missing from every row but the first (a real `seaborn` bug, not a script mistake) saves without error and passes every G1–G8 gate. Only looking at the render catches that, so do it yourself:
 
-- Is text inside the figure readable at print scale?
-- Does the figure match its caption?
-- Is the color palette consistent with other figures (or deliberately different for a reason)?
-- Are tick labels rotated / sized correctly?
+```bash
+pdftoppm -r 200 -png main.pdf /tmp/chk   # one PNG per page
+```
 
-This is the gate that requires human (or LLM-vision) judgment, not grep.
+Read each page with a figure and check:
+
+- Every data point/row/panel that the script intended to draw is actually visible — not just the first row, category, or panel (the seaborn trap above is the concrete failure mode; multi-panel and grouped-bar figures can drop data the same way).
+- Text inside the figure is readable at print scale.
+- The figure matches its caption.
+- Color palette is consistent with other figures (or deliberately different for a reason).
+- Tick labels are rotated/sized correctly, nothing overlaps, nothing is clipped at the figure edge.
 
 ## Final report format
 
 When all gates pass, deliver to the user:
 
 ```
-Paper ready: output/<slug>/latest/paper/main.pdf
+Paper ready: output/paper-writer/<slug>/latest/paper/main.pdf
 
 Stats:
   Pages:        12

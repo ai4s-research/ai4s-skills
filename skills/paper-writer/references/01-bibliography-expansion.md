@@ -68,7 +68,7 @@ For each query in the plan:
    - `year` — publication year
    - `venue` — `booktitle` for proceedings, `journal` for journals, "arXiv preprint arXiv:<id>" for preprints
    - `arxiv_id` or `doi` — at least one stable identifier
-4. **Append** the BibTeX entry to `output/<slug>/latest/paper/bibliography.bib` immediately (atomic Write/Edit), and add the query string to `output/<slug>/latest/paper/.bib_progress.txt`.
+4. **Append** the BibTeX entry to `output/paper-writer/<slug>/latest/paper/bibliography.bib` immediately (atomic Write/Edit), and add the query string to `output/paper-writer/<slug>/latest/paper/.bib_progress.txt`.
 
 WebFetch is rate-limited by the agent environment; pace queries to avoid throttling. For arXiv specifically, prefer the export.arxiv.org Atom endpoint when bulk-loading 10+ papers from one query — one WebFetch returns multiple entries.
 
@@ -100,14 +100,14 @@ Always include `url=` so a reviewer can audit the entry. If the venue is a journ
 
 ### 5. Sync to `papers.json` (recommended)
 
-Append a JSON record per BibTeX entry to `output/<slug>/latest/paper/papers.json` so the manifest stays consistent for downstream tools. Minimum fields: `title`, `authors`, `year`, `bib_key`, `url`.
+Append a JSON record per BibTeX entry to `output/paper-writer/<slug>/latest/paper/papers.json` so the manifest stays consistent for downstream tools. Minimum fields: `title`, `authors`, `year`, `bib_key`, `url`.
 
 ### 6. Validate before drafting prose
 
 Before you start rewriting Related Work, check:
 
 ```bash
-cd output/paper
+cd output/paper-writer/<slug>/latest/paper
 grep -c "^@" bibliography.bib    # should be ≥ 200
 ```
 
