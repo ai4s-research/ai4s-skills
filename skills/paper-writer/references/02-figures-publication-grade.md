@@ -302,11 +302,31 @@ If you must show flow (e.g., dataset → method → outcome), use plotly's Sanke
 
 ```python
 import plotly.graph_objects as go
-fig = go.Figure(go.Sankey(node=dict(...), link=dict(...)))
-fig.write_image("fig_06_flow.pdf", width=600, height=400)   # needs `kaleido`
+import plotly.io as pio
+if pio.kaleido.scope is not None:   # None when kaleido isn't installed — guard before touching it
+    pio.kaleido.scope.mathjax = None   # else kaleido bakes a "Loading [MathJax]…" banner into the PDF
+
+# Nodes are indexed 0..N-1; links reference them by that index.
+labels = ["ETTm1", "Weather",        # 0,1  datasets
+          "PatchTST", "Ours",        # 2,3  methods
+          "Best", "Runner-up"]       # 4,5  outcome
+link = dict(                          # every node must be reachable, or it renders empty
+    source=[0, 0, 1, 1, 3, 2],        # datasets → methods, then methods → outcome
+    target=[2, 3, 2, 3, 4, 5],
+    value =[5, 8, 6, 7, 13, 11],
+)
+fig = go.Figure(go.Sankey(node=dict(label=labels, pad=15, thickness=16), link=link))
+fig.update_layout(font_size=11, width=600, height=400)
+
+try:
+    fig.write_image("fig_06_flow.pdf")   # static export needs `kaleido`
+except Exception as e:                    # kaleido missing / incompatible
+    fig.write_html("fig_06_flow.html")
+    print(f"static export unavailable ({type(e).__name__}); wrote HTML fallback. "
+          "For the PDF: pip install kaleido")
 ```
 
-This requires `pip install plotly kaleido`. Use sparingly — sankey is fashionable but rarely the right tool.
+Requires `pip install plotly kaleido`. Pin a compatible pair — plotly 5.x needs `kaleido==0.2.1`; plotly ≥ 6 works with newer kaleido (a mismatch makes `write_image` raise, which the fallback above catches). Use sparingly — sankey is fashionable but rarely the right tool.
 
 ### Taste for advanced figures
 
