@@ -252,15 +252,17 @@ A survey that does not engage with prior surveys is rude (and incomplete).
 
 ### S5 · Figures look right
 
-Unattended runs can't rely on a human opening the PDF, so this is now two layers:
+An earlier version of this gate said "taste check, when a human reviewer is available" — but you can see a rendered page yourself, so that condition is always true; there is no unattended case where it doesn't apply. Rephrased: you *are* the reviewer, every time, because looking is cheap and catches things the design rules in `02` can't guarantee on paper (matplotlib text placement especially — nothing stops two labels from landing on the same pixels except a check that actually measures them).
 
-**Machine check (always):** G1's overfull list above must be empty (or ≤ ~2pt). A figure that overruns the margin shows up there; a figure correctly wrapped in `\resizebox`/`width=\linewidth` cannot. If you have `pdftoppm`/ImageMagick, rasterize the figure pages (`pdftoppm -png -f <p> -l <p> main.pdf /tmp/chk`) and confirm no glyphs touch the page edge.
+**Machine check** — the automatable half: G1's overfull list must be empty (or ≤ ~2pt); a figure wrapped per `02` (`\resizebox`/`width=\linewidth`) cannot produce one. A timeline script carries its own version of this same check inline (`02` Family 2's `get_window_extent` overlap test) — that's what "verified" means for labels: measured, not eyeballed.
 
-**Taste check (when a reviewer is available):** open `main.pdf` and verify:
-- Taxonomy figure: leaves are readable (not shrunk to illegibility by `\resizebox` — if so, fold the tree); fits cleanly within the column.
-- Timeline: lane structure visible; labels not overlapping.
-- Coverage matrix: cell colors readable; legend explained.
-- Architecture figures (if any): consistent style with the taxonomy.
+**Visual check** — the half only a look can catch:
+
+```bash
+pdftoppm -r 200 -png main.pdf /tmp/chk   # one PNG per page
+```
+
+Read each page with a figure and look for what a good survey figure actually has: every label sitting in clear space, taxonomy leaves legible at their rendered size (not shrunk past reading by `\resizebox` — fold the tree instead if so), timeline lanes and labels each readable on their own, coverage-matrix cells and legend both readable, and any architecture figures sharing the taxonomy's visual style. Where a page doesn't look like that, the fix lives in `02` (Failure B for trees, Failure C for timelines) — go there and redraw rather than nudging pixels by hand.
 
 ## Final report format
 
@@ -299,5 +301,5 @@ That's a legitimate stop. Fabricating entries to clear the gate is not.
 - [ ] G7 `\thanks` carries human-review clause; no simulated clause
 - [ ] G8 every label is referenced
 - [ ] S1–S5 soft gates reviewed
-- [ ] Visual sanity check on the rendered PDF
+- [ ] S5 visual check: rasterized each figure page and read it — every label in clear space, every figure legible at its rendered size
 - [ ] Honest report — don't pad to clear gates

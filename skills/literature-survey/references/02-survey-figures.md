@@ -98,6 +98,15 @@ Then apply Failure-A's `\resizebox` on top as a width backstop. Order matters: f
 
 The quality gate (`05-quality-gate.md` G1 + S5) treats residual `Overfull \hbox` as a remediation loop, and reminds you that a figure shrunk to illegibility is *not* a pass — fold it instead.
 
+### Failure C — timeline labels colliding (matplotlib, not TikZ)
+
+This is the *other* recurring overlap complaint, and `forest`/`resizebox` don't touch it because it's not a TikZ figure. matplotlib text placed with a **fixed offset** (`xytext=(0, 12)`) has no idea where its neighbours are: two events close in year, or sharing a lane, land their label boxes on top of each other. Treat it like Failure B — the fix is spacing that *adapts*, not a bigger canvas or a bigger font.
+
+1. **Merge co-located events into one label.** If two+ events share a year (and ideally a lane), don't emit two annotations — combine into one multi-line label (the worked example below already does this: `"MOMENT, Moirai\nTimeGPT, Chronos"`). Do this whenever step 3 below fires, not only when you happen to think of it up front.
+2. **Reach for a label-repulsion library when deterministic staggering isn't enough.** This exact problem — text labels that must stay near their point but not touch their neighbours — already has a well-tested solution: R users solve it with `ggrepel`; the Python equivalent is `adjustText` (`pip install adjustText`, then `from adjustText import adjust_text`). It iteratively pushes overlapping labels apart and can draw a thin leader line back to the true point when it had to move one. The Family 2 code below tries the cheap deterministic stagger first (cycle through 2–3 offset heights for events close in x within a lane) and only calls `adjust_text` if a collision survives that — an already-clean layout is better left alone than perturbed further, and this keeps the script working even where `adjustText` isn't installed.
+3. **Verify, don't eyeball — check actual rendered bounding boxes regardless of which placement method you used.** After drawing, call `fig.canvas.draw()`, get each label's `get_window_extent()`, and test pairwise overlap. Neither `adjustText` nor manual staggering *guarantees* zero overlap for an arbitrary event list — they reduce the odds, they don't prove the outcome — so the *script itself* still measures the actual render, the same way forest proves tree non-overlap by construction. The Family 2 code below does this and reports a concrete next step (merge or widen) when it finds a collision.
+4. **Widen last.** Only if 2–3 pairs still collide after the above, widen `figsize` slightly.
+
 ## File layout
 
 All figures land under `output/literature-survey/<slug>/survey_paper/figures/`. Use vector PDF for LaTeX (`.pdf`); keep a PNG sibling only for previewing. TikZ figures live inline inside the relevant `sections/*.tex` (no separate file needed). matplotlib / seaborn figures get a `make_fig_NN_<slug>.py` script alongside the PDF.
@@ -158,21 +167,31 @@ When the field has a layered structure (e.g., infrastructure → models → appl
 - Color: one family per branch; orange for the row that contains your contribution if you have one.
 - Leaves: 8–15 reads best top-down. With `forest` there is no hard cap (it won't overlap), but past ~15 switch to the horizontal orientation so labels stay full-size rather than shrinking; past ~24 fold into sub-figures.
 - Always cite each leaf in the prose; the leaf names alone are not the survey, the citations are.
+- Keep leaf text to a short model/method name (≤ ~3 words), not a paper title. `forest` guarantees siblings won't *overlap* regardless of text length, but a leaf holding a full title still reads as cramped and defeats the point of a taxonomy (fast scanning). If a name must wrap, let `align=center` wrap it at a `\\` you insert — don't fight forest's spacing by hand.
 
 ## Family 2 — Timeline of major works (matplotlib)
 
 A survey timeline shows how the field evolved. Place key papers on a horizontal time axis with publication-year ticks.
 
 ```python
-"""Generate fig_02_timeline.pdf — chronology of major works."""
+"""Generate fig_02_timeline.pdf — chronology of major works.
+Pre-staggers labels deterministically, measures the actual rendered boxes,
+and only escalates to adjustText (ggrepel's Python counterpart) if a
+collision survives the pre-stagger. See Failure C for why the measurement
+step runs either way."""
 import os
 import matplotlib.pyplot as plt
+try:
+    from adjustText import adjust_text
+except ImportError:
+    adjust_text = None
 
 # Apply the Nature-style preamble from the top of this reference (sans-serif,
 # Wong palette, despined, thin axes). Do NOT use font.family:"serif".
 
 events = [
-    # (year, lane, label, color)
+    # (year, lane, label, color) — co-located events are already MERGED
+    # into one multi-line label (Failure C step 1), not stacked separately.
     (2017, 0, "Transformer\n(Vaswani)", "#1f77b4"),
     (2019, 0, "LogSparse",              "#1f77b4"),
     (2020, 0, "Reformer",                "#1f77b4"),
@@ -193,17 +212,62 @@ LANE_LABELS = {
     4: "Foundation models",
 }
 
-fig, ax = plt.subplots(figsize=(6.0, 3.4))   # width ≤ column (6.2in); include with width=\linewidth
+LANE_Y = 2.2  # data-unit spacing between lanes — enough room that a
+              # staggered 2-line label can't reach into the next lane
+fig, ax = plt.subplots(figsize=(6.0, 5.4))   # width ≤ column (6.2in); include with width=\linewidth
 years = [e[0] for e in events]
 ax.set_xlim(min(years) - 0.5, max(years) + 0.5)
-ax.set_ylim(-0.7, max(LANE_LABELS) + 0.7)
+ax.set_ylim(-0.7 * LANE_Y, (max(LANE_LABELS) + 0.7) * LANE_Y)
 
-for year, lane, label, color in events:
-    ax.scatter([year], [lane], s=120, color=color, edgecolor="black", linewidth=0.5, zorder=3)
-    ax.annotate(label, (year, lane), xytext=(0, 12), textcoords="offset points",
-                ha="center", fontsize=7.5, color="black")
+# Pre-stagger events close together within the same lane.
+OFFSETS, offset_by_index, by_lane = [8, 34, 60], {}, {}
+for i, (year, lane, *_) in enumerate(events):
+    by_lane.setdefault(lane, []).append((year, i))
+for lane, items in by_lane.items():
+    items.sort()
+    last_year, cycle = None, 0
+    for year, i in items:
+        cycle = (cycle + 1) % len(OFFSETS) if (last_year is not None and year - last_year < 1.5) else 0
+        offset_by_index[i] = OFFSETS[cycle]
+        last_year = year
 
-ax.set_yticks(list(LANE_LABELS.keys()))
+texts = []
+for i, (year, lane, label, color) in enumerate(events):
+    ax.scatter([year], [lane * LANE_Y], s=120, color=color, edgecolor="black", linewidth=0.5, zorder=3)
+    t = ax.annotate(label, (year, lane * LANE_Y), xytext=(0, offset_by_index[i]), textcoords="offset points",
+                     ha="center", fontsize=7.5, color="black")
+    texts.append(t)
+
+def find_collisions():
+    fig.canvas.draw()
+    renderer = fig.canvas.get_renderer()
+    return [
+        (texts[i].get_text(), texts[j].get_text())
+        for i in range(len(texts)) for j in range(i + 1, len(texts))
+        if texts[i].get_window_extent(renderer).overlaps(texts[j].get_window_extent(renderer))
+    ]
+
+# Escalate to adjustText only if the pre-stagger left a collision — an
+# already-clean layout is better left alone than perturbed further. Either
+# way this is a measurement, not a guess: neither pre-staggering nor
+# adjustText proves zero overlap by construction the way forest does for
+# trees, so the script checks the actual render instead of trusting either.
+collisions = find_collisions()
+if collisions and adjust_text is not None:
+    # adjustText repels remaining overlaps; a thin grey leader line appears
+    # automatically wherever it had to move a label off its point.
+    adjust_text(texts, ax=ax, only_move={"text": "y", "static": "y"}, expand=(1.05, 1.2),
+                arrowprops=dict(arrowstyle="-", color="grey", lw=0.4))
+    collisions = find_collisions()
+
+if collisions:
+    raise SystemExit(
+        f"{len(collisions)} label pair(s) still overlap: {collisions}\n"
+        "Merge the colliding events into one label (Failure C step 1) or widen "
+        "figsize slightly (step 4), then re-run."
+    )
+
+ax.set_yticks([k * LANE_Y for k in sorted(LANE_LABELS)])
 ax.set_yticklabels([LANE_LABELS[k] for k in sorted(LANE_LABELS)])
 ax.set_xlabel("Year")
 ax.grid(True, axis="x", alpha=0.25)
@@ -222,6 +286,7 @@ print(f"Wrote {out}")
 - Lanes carve the timeline into sub-areas (rows of the figure) — the same sub-areas as the taxonomy (Fig~\ref{fig:taxonomy}). Consistency helps readers connect the two.
 - Annotate ~10–15 key works; more is clutter. Pick the works that defined the year, not every paper.
 - Color matches taxonomy color so the reader can cross-reference.
+- Adapt the collision-check block along with everything else — it's what lets you trust a new topic's event spacing without re-eyeballing the render yourself; the script tells you if it's safe to look away.
 
 ## Family 3 — Coverage matrix / capability heatmap (seaborn)
 
@@ -307,6 +372,7 @@ This skill has no default figure (unlike experiment-suite). All figures are agen
 - [ ] matplotlib uses the sans-serif Nature preamble (not `font.family:"serif"`); `figsize` at 89 mm / 183 mm
 - [ ] Caption leads with a one-sentence finding, not a noun phrase
 - [ ] Taxonomy built with `forest` (auto-spaced), NOT hand-tuned `sibling distance` + `child{}` — no overlapping leaves
+- [ ] Timeline script includes the Failure C collision check (`get_window_extent` overlap test on the actual rendered labels) — not just fixed-offset `annotate()`
 - [ ] Every TikZ/forest figure wrapped in `\resizebox{\linewidth}{!}{…}` as a width backstop (after spacing is correct, not instead of it)
 - [ ] Every `\includegraphics` has `width=…\linewidth`; matplotlib `figsize` width ≤ 6.2 in
 - [ ] No `figure*` used to "gain width" (single-column template); many-leaf trees go horizontal / fold, not squashed
