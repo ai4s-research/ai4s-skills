@@ -146,11 +146,18 @@ cd experiment
 
 ### S4 · Visuals make sense
 
-Open each figure PDF. Check:
-- Axes labelled, legend readable at print scale
-- Watermark "simulated" present iff mode is simulated
-- Colors from the publication palette (no default cycle)
-- Hero panel / supporting panel hierarchy matches `figures/figure_contract.md`
+G6 confirms a figure *exists and is vector*; it can't confirm the figure is *right*. A plot can save without error yet drop data silently — e.g. a heatmap that annotates only its first row (a real `seaborn<0.13` bug), or a multi-panel/grouped-bar figure that renders one series and omits the rest. Only looking at the render catches these, so do it yourself rather than trusting the file exists:
+
+```bash
+for f in figures/*.pdf; do pdftoppm -r 200 -png "$f" "${f%.pdf}"; done   # one PNG per figure
+```
+
+Read each PNG and check:
+- Every series/row/panel the script intended to draw is actually visible (not just the first).
+- Axes labelled, legend readable at print scale; nothing overlaps or is clipped at the edge.
+- Watermark "simulated" present iff mode is simulated.
+- Colors from the publication palette (no default matplotlib cycle).
+- Hero panel / supporting panel hierarchy matches `figures/figure_contract.md`.
 
 ### S5 · Multi-seed reporting
 
@@ -167,7 +174,7 @@ if len(n_seeds) < 3:
 When all gates pass:
 
 ```
-Experiment package ready: output/experiment-suite/<slug>/
+Experiment package ready: output/experiment-suite/<slug>/latest/
 
 Stats:
   Design:        912 words, 7 sections
