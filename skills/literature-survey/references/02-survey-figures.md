@@ -107,6 +107,12 @@ This is the *other* recurring overlap complaint, and `forest`/`resizebox` don't 
 3. **Verify, don't eyeball — check actual rendered bounding boxes regardless of which placement method you used.** After drawing, call `fig.canvas.draw()`, get each label's `get_window_extent()`, and test pairwise overlap. Neither `adjustText` nor manual staggering *guarantees* zero overlap for an arbitrary event list — they reduce the odds, they don't prove the outcome — so the *script itself* still measures the actual render, the same way forest proves tree non-overlap by construction. The Family 2 code below does this and reports a concrete next step (merge or widen) when it finds a collision.
 4. **Widen last.** Only if 2–3 pairs still collide after the above, widen `figsize` slightly.
 
+### Failure D — tick labels and watermarks colliding (matplotlib/seaborn)
+
+- **Categorical x tick labels:** long multi-word names rotated 45° *will* collide with their neighbours. Either shorten to ≤ 12 chars (expand in caption), wrap to two lines with `\n` and keep **horizontal** (never rotate multi-line labels), rotate only short single-line labels (`rotation=30, ha="right", rotation_mode="anchor"`), or flip to a horizontal bar chart (`ax.barh`) when names are sentences.
+- **In-axes annotations / watermarks** (e.g., a SIMULATED marker): place via `transform=ax.transAxes` in a corner free of bars/lines/labels, `alpha≤0.5` — or state it in the caption instead of stamping pixels.
+- **Self-check (required):** after writing each PDF, save a PNG sibling and **open and look at it**. Any text touching other text or data = regenerate.
+
 ## File layout
 
 All figures land under `output/literature-survey/<slug>/survey_paper/figures/`. Use vector PDF for LaTeX (`.pdf`); keep a PNG sibling only for previewing. TikZ figures live inline inside the relevant `sections/*.tex` (no separate file needed). matplotlib / seaborn figures get a `make_fig_NN_<slug>.py` script alongside the PDF.

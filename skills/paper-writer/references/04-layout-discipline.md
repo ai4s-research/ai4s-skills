@@ -41,7 +41,17 @@ Two things in this example are provenance-conditional, per `06-experiment-proven
 - `[!t]` failing repeatedly → try `[!ht]` (top, otherwise here).
 - Avoid `[h]` and `[h!]` — they cause floats to land in the middle of paragraphs and almost always look wrong.
 - Avoid `[H]` (forced placement, requires `float` package) except when necessary.
-- This template is **single-column** `article`, so `table*`/`figure*` span nothing extra. For a wide table that overruns the text width, shrink to fit instead: `\small`/`\footnotesize`, tighter `\tabcolsep`, `tabularx` with an `X` column, or wrap the `tabular` in `\resizebox{\linewidth}{!}{…}`. (Only switch to `table*` if you have actually moved this paper to a two-column class.)
+- This template is **single-column** `article`, so `table*`/`figure*` span nothing extra. For a wide table that overruns the text width, fit it by the ladder in "Font size standard" below — never by `\resizebox`. (Only switch to `table*` if you have actually moved this paper to a two-column class.)
+
+### Font size standard (uniform across the paper)
+
+Tables must look like one paper, not a collage. Exactly two sizes are allowed:
+
+- **Default: `\small`** — every table starts here.
+- **Wide tables: `\footnotesize`** — only when the table genuinely overruns the text width at `\small`.
+- **Never** `\scriptsize`/`\tiny`, and **never wrap a `tabular` in `\resizebox`/`\scalebox`** — scaling picks an arbitrary effective font size per table, which is exactly how one table ends up huge and the next unreadably small.
+
+If a table still overflows at `\footnotesize`, shrink the *content*, in this order: tighter `\tabcolsep` (down to 3pt) → abbreviate headers (`Concept Stability` → `C-Stab.`, expand in caption) → drop or merge low-value columns → transpose → split into two tables. `tabularx` with `X` columns is fine for wrapping text columns.
 
 ### Style
 
@@ -211,7 +221,7 @@ Use the banner sparingly — the `\thanks` footnote is enough for normal cases.
 ### `Float too large for page`
 
 - A figure or table is larger than text height/width.
-- Reduce `width=`, or wrap the content in `\resizebox{\linewidth}{!}{…}` (TikZ/tabular). `figure*`/`table*` don't help in this single-column template.
+- Figures/TikZ: reduce `width=` or wrap in `\resizebox{\linewidth}{!}{…}`. Tables: use the font-size ladder above (`\footnotesize`, tighter `\tabcolsep`, fewer columns) — not `\resizebox`. `figure*`/`table*` don't help in this single-column template.
 
 ### `Underfull \hbox`
 
@@ -238,6 +248,7 @@ pdfinfo main.pdf | grep Pages                # must be ≥ target
 ## Quick checklist
 
 - [ ] Every table wrapped in `\begin{table}[!t]` with caption + label, using `booktabs`
+- [ ] Table fonts uniform: `\small` default, `\footnotesize` for wide ones; no `\resizebox`/`\scalebox` on any `tabular`
 - [ ] Every figure wrapped in `\begin{figure}[!t]` with caption + label
 - [ ] Captions are standalone-readable (1–3 sentences, not "Results.")
 - [ ] Cross-refs use non-breaking space (`~`)

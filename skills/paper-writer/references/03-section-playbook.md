@@ -133,9 +133,12 @@ reviews related work. Section~\ref{sec:method} develops ...
 
 Reference them: "Eq.~\ref{eq:patch} defines the patch embedding."
 
+**Symbol rule (mandatory):** immediately after every equation, define each symbol that has not been defined earlier in the paper — a "where ..." sentence: "where $\sigma$ is the sigmoid activation, $\mathbf{W}_1, \mathbf{W}_2$ are learned projections, and $\mathbf{b}_1, \mathbf{b}_2$ are biases." Each symbol is defined exactly once, at first use; later equations reuse it without re-explanation. Before finishing the section, scan every equation and check that no operator, variable, or index appears without a prior definition (including "obvious" ones like $\sigma$, $\odot$, $\Vert$).
+
 **Anti-patterns:**
 - Pure prose with no equations — for a methods paper, that's incomplete.
 - Equations without reference — if you don't refer to it later, why was it numbered?
+- An equation introducing symbols ($\sigma$, $\odot$, subscripts) that the surrounding prose never defines.
 - Pseudocode dumped via `algorithm` without prose context.
 - Hyperparameter list without justification ("we set $d=128$" with no rationale).
 - Vague language: "we train using standard practice". Standard *what* practice? Specify.

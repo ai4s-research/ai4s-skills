@@ -187,6 +187,19 @@ A single-column manuscript (current default template):
 - Embed fonts: `pdf.fonttype=42` and `ps.fonttype=42` ensure the PDF doesn't have Type 3 font issues at submission.
 - Avoid 3-D bars, drop shadows, gradient fills. None of these belong in a research paper.
 
+### Text collision rules (mandatory)
+
+Overlapping text is the most common defect in generated figures. Rules:
+
+- **Categorical x tick labels:** long multi-word category names rotated 45° *will* collide with their neighbours. Pick one:
+  - shorten each label to ≤ 12 characters (`No lattice feedback` → `No lattice`, expand in the caption), keep horizontal;
+  - wrap to two lines with `\n` (`textwrap.fill(label, 10)`), keep **horizontal** — never rotate multi-line labels;
+  - rotate only short single-line labels: `rotation=30, ha="right", rotation_mode="anchor"`;
+  - or flip to a **horizontal bar chart** (`ax.barh`) — the right answer when category names are sentences.
+- **In-axes annotations / watermarks** (e.g., a SIMULATED marker): place with `ax.text(..., transform=ax.transAxes)` in a corner that holds no bars, lines, or labels; `alpha≤0.5`; check it against the actual data extent. Prefer stating simulation in the caption/`\thanks` over stamping pixels (see "Reusing an experiment-suite baseline figure").
+- **Direct labels on dense data:** if ≥ 6 series/points need labels, label only the extremes or move detail to a table; nudge labels apart manually — matplotlib does not auto-avoid collisions.
+- **Self-check (required):** after writing each PDF, also save a PNG sibling (`plt.savefig("....png", dpi=200)`) and **open and look at it** before accepting the figure. Any text touching other text or data = regenerate with the rules above. Delete the PNG afterwards if you don't want it shipped.
+
 ## Family 3 — Heatmaps & confusion-style tables (seaborn)
 
 Use seaborn for confusion matrices, attention maps, dataset × method MSE grids, ablation surfaces.
@@ -353,3 +366,4 @@ Either way, the final inventory inside `$RUN/figures/` is what compiles into the
 - [ ] Each figure referenced in prose with `\ref{fig:...}`
 - [ ] Every figure has a caption that stands alone (a reader who only sees the figure should understand it)
 - [ ] No 3-D bars, no pie charts, no rainbow palettes, no raster screenshots
+- [ ] Zero text collisions: PNG sibling of every figure visually inspected; tick labels short/wrapped per the collision rules; watermarks in empty corners

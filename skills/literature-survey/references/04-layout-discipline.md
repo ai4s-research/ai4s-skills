@@ -37,7 +37,11 @@ A bare `\begin{tabular}` in body text gets wrong placement, no caption, no label
 - `[!t]` — top of page. Default for tables and figures.
 - `[!ht]` — top, otherwise here.
 - Avoid `[h]` and `[h!]` — they cause floats to land in the middle of paragraphs.
-- For a wide method-comparison table that overruns the text width, **do not** reach for `table*` (no second column to span here). Instead shrink to fit: `\small`/`\footnotesize`, tighten `\tabcolsep`, drop vertical padding, or wrap the `tabular` in `\resizebox{\linewidth}{!}{…}`; use `tabularx` with an `X` column when one text column should absorb the slack.
+- For a wide method-comparison table that overruns the text width, **do not** reach for `table*` (no second column to span here). Instead shrink to fit: `\footnotesize`, tighten `\tabcolsep`, drop vertical padding; use `tabularx` with an `X` column when one text column should absorb the slack.
+
+### Font size standard (uniform across the paper)
+
+Exactly two table font sizes are allowed: **`\small` (default)** and **`\footnotesize` (wide tables only)**. Never `\scriptsize`/`\tiny`, and **never wrap a `tabular` in `\resizebox`/`\scalebox`** — scaling picks an arbitrary effective font size per table, which is how one table ends up huge and the next unreadably small. If a table still overflows at `\footnotesize`: tighter `\tabcolsep` (≥ 3pt) → abbreviate headers (expand in caption) → drop/merge columns → transpose → split into two tables.
 
 ### Style
 
@@ -133,7 +137,7 @@ Do **not** put `\input{simulated}` inside `\title{}`.
 
 ### Float too large for page
 
-- Reduce `width=`, or wrap the content in `\resizebox{\linewidth}{!}{…}` (TikZ/tabular). `figure*`/`table*` do not help in this single-column template.
+- Figures/TikZ: reduce `width=` or wrap in `\resizebox{\linewidth}{!}{…}`. Tables: use the font-size ladder above (`\footnotesize`, tighter `\tabcolsep`, fewer columns) — not `\resizebox`. `figure*`/`table*` do not help in this single-column template.
 
 ## Verification commands
 
@@ -150,7 +154,7 @@ pdfinfo main.pdf | grep Pages                # must be ≥ target
 
 ## Quick checklist
 
-- [ ] Every table wrapped in `\begin{table}[!t]` with caption + label, using `booktabs`; wide tables fit via `\small`/`\resizebox`/`tabularx`, not `table*`
+- [ ] Every table wrapped in `\begin{table}[!t]` with caption + label, using `booktabs`; fonts uniform (`\small` default, `\footnotesize` wide); no `\resizebox`/`\scalebox` on any `tabular`, no `table*`
 - [ ] Every figure wrapped in `\begin{figure}[!t]` with caption + label; TikZ in `\resizebox{\linewidth}{!}{…}`, includes with `width=…\linewidth`
 - [ ] Captions are standalone-readable (1–3 sentences)
 - [ ] Cross-refs use non-breaking space (`~`)
