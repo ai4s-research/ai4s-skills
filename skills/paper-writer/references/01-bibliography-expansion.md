@@ -29,6 +29,27 @@ OpenReview uses `https://openreview.net/forum?id=<id>`. NeurIPS proceedings: `ht
 
 ## Process
 
+### 0. Choose a temporal profile before searching
+
+Do not treat all fields as if they age at the same speed. Record one profile as
+the first line of `.bib_progress.txt`:
+
+| Profile | Use when | Required publication-year distribution |
+|---|---|---|
+| **Recency-led** | The request names a recent year/window or says latest, emerging, current, or state of the art | At least 70% inside the requested window; older canon is supporting context |
+| **Fast-moving** | Default for AI4S, ML, LLM, computational biology, and similarly fast fields | At least 60% from the current calendar year and previous two years |
+| **Balanced** | A mature field where recent work and established literature carry similar weight | At least 40% from the current year and previous two years |
+| **Timeline-spanning** | Historical, theoretical, or evolution-focused paper | No ratio; span the canon through the newest relevant work |
+
+In 2026 the default three-year window is 2024–2026. Compute it from the
+system year; never hardcode it into reusable output. For fast-moving and
+recency-led profiles after March, at least 5% of the bibliography must come
+from the current year so “recent” cannot quietly mean “two years ago”.
+
+These are **coverage gates, not search exclusion rules**. Keep seminal methods,
+original datasets, primary definitions, and directly relevant older evidence.
+Never delete a necessary source merely to improve the ratio.
+
 ### 1. Optionally seed from a prior lit-survey run
 
 If the `literature-survey` skill has already produced a bib for the same topic (same slug), copy it as a starting point:
@@ -43,7 +64,8 @@ Otherwise start with an empty `$RUN/bibliography.bib`. Either way, you build the
 
 Decompose the topic into **15–25 angles**. Aim for diversity along these axes:
 
-- **Foundational vs. recent**: include both seminal pre-2020 and last-3-years papers.
+- **Foundational vs. recent**: include both seminal work and enough current
+  work to satisfy the recorded temporal profile.
 - **Method families**: every distinct architectural family or technique that has a name in the field.
 - **Application domains**: each domain in which the topic is applied.
 - **Adjacent / contrast**: rival paradigms (e.g., for "Transformer time-series forecasting": linear baselines, MLP-only, foundation models).
@@ -52,6 +74,11 @@ Decompose the topic into **15–25 angles**. Aim for diversity along these axes:
 - **Surveys**: both topic-specific and adjacent-area.
 
 For each axis, write one or two natural-language queries.
+
+For recency-led and fast-moving profiles, make most query angles date-aware:
+use the explicit year/window, date-sorted arXiv/OpenReview feeds, and the newest
+conference or journal proceedings. Relevance-ranked search alone over-selects
+older, highly cited papers.
 
 ### 3. Per query: WebSearch → triage → WebFetch → extract
 
@@ -109,6 +136,14 @@ Before you start rewriting Related Work, check:
 ```bash
 cd output/paper-writer/<slug>/latest/paper
 grep -c "^@" bibliography.bib    # should be ≥ 200
+
+# AI4S default. The script derives 2024–2026 when run in 2026.
+python3 check_bibliography_freshness.py bibliography.bib \
+  --profile fast-moving
+
+# For a request explicitly limited to 2026:
+python3 check_bibliography_freshness.py bibliography.bib \
+  --profile recency-led --start-year 2026 --end-year 2026
 ```
 
 Then run a single `pdflatex + bibtex + pdflatex × 2` pass on the template `main.tex` with the new bib. If `main.bbl` doesn't list every key you intend to cite, the bib has a syntax problem. Fix before drafting prose.
@@ -129,6 +164,7 @@ After every section rewrite, recompile and grep `main.log` for `Citation .* unde
 ## Quick checklist
 
 - [ ] Planned 15–25 query angles; recorded plan
+- [ ] Recorded a temporal profile and passed `check_bibliography_freshness.py`
 - [ ] Each entry backed by a URL the agent fetched in this session (not from memory)
 - [ ] `grep -c "^@" bibliography.bib` ≥ 200
 - [ ] Every entry has `title`, `author`, `year`, venue (`booktitle` or `journal`), and `url`

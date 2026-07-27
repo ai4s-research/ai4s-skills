@@ -75,6 +75,30 @@ For each figure:
 - listed in `manifest.json` with `id`, `path_pdf`, `caption`, `section`
 - should also have sibling `.svg` / `.tiff` when the environment supports them
 
+Reject generic diagram-tool output:
+
+```bash
+grep -rEi '```mermaid|@startuml|plantuml|\.mmd|\.puml|\.drawio' figures/
+# must be empty
+```
+
+Rasterize and inspect every final figure:
+
+```bash
+check_dir=$(mktemp -d)
+for f in figures/*.pdf; do
+  pdftoppm -singlefile -r 200 -png "$f" \
+    "$check_dir/$(basename "${f%.pdf}")"
+done
+```
+
+This hard gate fails if text is below 7 pt at final size; labels, ticks,
+legends, annotations, panel letters, watermarks, or data marks overlap or are
+clipped; an expected series/row/panel is missing; or a final figure is Mermaid,
+PlantUML, a generic flowchart/mind-map, an editor screenshot, or a notebook/UI
+screenshot. Regenerate and inspect again. Automatic layout calls and a
+successful export are not substitutes for looking at the final render.
+
 ### G7 · Report depth
 
 ```bash
@@ -144,22 +168,7 @@ cd experiment
 # This is optional but a powerful confidence check.
 ```
 
-### S4 · Visuals make sense
-
-G6 confirms a figure *exists and is vector*; it can't confirm the figure is *right*. A plot can save without error yet drop data silently — e.g. a heatmap that annotates only its first row (a real `seaborn<0.13` bug), or a multi-panel/grouped-bar figure that renders one series and omits the rest. Only looking at the render catches these, so do it yourself rather than trusting the file exists:
-
-```bash
-for f in figures/*.pdf; do pdftoppm -r 200 -png "$f" "${f%.pdf}"; done   # one PNG per figure
-```
-
-Read each PNG and check:
-- Every series/row/panel the script intended to draw is actually visible (not just the first).
-- Axes labelled, legend readable at print scale; nothing overlaps or is clipped at the edge.
-- Watermark "simulated" present iff mode is simulated.
-- Colors from the publication palette (no default matplotlib cycle).
-- Hero panel / supporting panel hierarchy matches `figures/figure_contract.md`.
-
-### S5 · Multi-seed reporting
+### S4 · Multi-seed reporting
 
 ```python
 import json
@@ -184,7 +193,7 @@ Stats:
   Report:        1240 words, 8 sections
   Disclosure:    "simulated" present in report header, every figure caption, results.json provenance
 
-Quality gate: PASSED (G1–G8 hard, S1–S5 soft).
+Quality gate: PASSED (G1–G8 hard incl. final-size figure inspection, S1–S4 soft).
 ```
 
 If any hard gate cannot honestly be cleared:
@@ -202,8 +211,9 @@ That's a legitimate deviation. Padding the design to 700 words with filler is no
 - [ ] G4 README has install + launch + evaluate commands
 - [ ] G5 results.json schema valid with provenance
 - [ ] G6 ≥ 3 figures, vector PDF, all in manifest
+- [ ] G6 final-size rasters inspected: text ≥ 7 pt, no overlap/clipping/missing marks, no generic diagram-tool output
 - [ ] Figure contract written before plotting; export bundle present when possible
 - [ ] G7 report ≥ 800 words, 7 sections
 - [ ] G8 provenance consistent across report / figures / results.json
-- [ ] S1–S5 soft gates reviewed
+- [ ] S1–S4 soft gates reviewed
 - [ ] Honest report — don't pad to clear gates

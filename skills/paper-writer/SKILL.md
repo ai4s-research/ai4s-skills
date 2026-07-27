@@ -18,7 +18,7 @@ The substantive work is decomposed into reference playbooks under `references/`:
 | `references/02-figures-publication-grade.md` | TikZ / matplotlib / seaborn / multi-panel figure recipes |
 | `references/03-section-playbook.md` | per-section structure, length, citation density |
 | `references/04-layout-discipline.md` | tables, figures, floats, cross-refs, author + disclosure footnote |
-| `references/05-quality-gate.md` | self-check before delivery (G1–G8 hard, S1–S5 soft) |
+| `references/05-quality-gate.md` | self-check before delivery (G1–G8 hard, S1–S4 soft) |
 | `references/06-experiment-provenance.md` | honest provenance for every number (measured / simulated / illustrative) |
 
 **Read the relevant reference _before_ writing, not after.**
@@ -77,19 +77,30 @@ Open `references/00-incremental-execution.md` first. Then carry out the five tra
 
 **Open:** `references/01-bibliography-expansion.md`.
 
-Plan 15–25 query angles for the topic. For each angle: WebSearch → pick candidates → WebFetch each candidate's abstract / arXiv API URL → extract canonical title/authors/year/venue/url → append a BibTeX entry to `$RUN/bibliography.bib`. **Every entry must originate from a URL fetched in this session.** Memory entries are forbidden.
+First choose and record the temporal profile from that reference. AI4S and
+similarly fast-moving fields default to at least 60% of references from the
+current calendar year and previous two years; an explicitly recent window uses
+the stricter recency-led profile. Then plan 15–25 query angles. For each angle:
+WebSearch → pick candidates → WebFetch each candidate's abstract / arXiv API
+URL → extract canonical title/authors/year/venue/url → append a BibTeX entry to
+`$RUN/bibliography.bib`. **Every entry must originate from a URL fetched in
+this session.** Memory entries are forbidden.
 
-**Hard stop:** do not draft prose until `grep -c "^@" $RUN/bibliography.bib` is ≥ 200, and `grep -E "^@.+\{unknown" $RUN/bibliography.bib` is empty.
+**Hard stop:** do not draft prose until the bibliography has ≥ 200 entries,
+contains no `unknown` keys, and passes
+`check_bibliography_freshness.py` for the recorded profile.
 
 #### 3.2 Figures — 4–8 publication-grade
 
 **Open:** `references/02-figures-publication-grade.md`.
 
-Decide what the paper needs based on the topic, typically:
+Decide what the paper needs based on its claims and evidence:
 
-- 1 architecture / pipeline diagram (TikZ inline, or matplotlib).
-- 2–3 quantitative comparison plots (matplotlib publication style).
-- 1 heatmap / multi-panel ablation (only if data justifies).
+- Architecture / pipeline diagram only when the paper introduces or compares a
+  real method whose mechanism needs explanation.
+- Quantitative comparison plots when measured or explicitly simulated results
+  support them.
+- Heatmap / multi-panel ablation only when the data justifies it.
 
 Generate each figure into `$RUN/figures/`. Save the matplotlib / TikZ source alongside the PDF so each figure is reproducible. If the experiment-suite produced a `figures/manifest.json`, **reuse those figures by symlink or copy** — don't redraw what's already produced.
 
@@ -105,9 +116,14 @@ Draft each section per its playbook (length, structure, citation density, equati
 
 **Open:** `references/04-layout-discipline.md`.
 
-- Wrap every table in `\begin{table}[!t]` with booktabs + standalone caption.
-- Wrap every figure in `\begin{figure}[!t]` with `\includegraphics{figures/<basename>}` + standalone caption.
+- Put each figure or table in the section whose prose first introduces or
+  interprets it, immediately after that paragraph in the source. Do not collect
+  artifacts in a fixed section or force one float placement across the paper.
+- Wrap tables and figures in standard LaTeX floats with standalone captions;
+  choose `[htbp]`, `[tbp]`, or `[p]` from the artifact's size and narrative role.
 - Use `~\cite{}` and `~\ref{}` (non-breaking space).
+- Let LaTeX assign citation, figure, table, equation, section, and algorithm
+  numbers from 1 in first-appearance order. Never type display numbers manually.
 - Set `\author{AI4S Agent}` and attach a `\thanks` footnote that **always** recommends human review, and **additionally** flags simulated numerics when applicable.
 
 #### 3.5 Compile + quality gate
@@ -122,7 +138,7 @@ pdflatex -interaction=nonstopmode main.tex
 
 **Open:** `references/05-quality-gate.md`.
 
-Run all G1–G8 hard gates and S1–S5 soft gates. If a hard gate fails, fix and re-run; do not ship a paper that fails G1–G4. If you cannot honestly clear a gate (e.g., bibliography stalled at 156 entries because the topic is niche), say so explicitly instead of padding.
+Run all G1–G8 hard gates and S1–S4 soft gates. If a hard gate fails, fix and re-run; do not ship a paper that fails G1–G4. If you cannot honestly clear a gate (e.g., bibliography stalled at 156 entries because the topic is niche), say so explicitly instead of padding.
 
 ### Step 4 — Deliver
 

@@ -36,13 +36,22 @@ Before planning a single query, read the user's topic the way a librarian would 
 
 | Signal in the topic / request | Posture | What it means for search |
 |---|---|---|
-| Names a specific recent/current/future year ("… 2026"), or says "latest / recent / emerging / state of the art / this year / past 12 months" | **Recency-led** | The named timeframe is a **hard filter**. Most queries (≳ 70%) carry that year/range and lead with date-sorted sources (see §3.5). Canon/foundational works appear only as *supporting context* (≤ ~30%), explicitly framed as "prior to the surveyed window". **Do not draft until the bib actually contains real entries from the named window.** |
+| Names a specific recent/current year ("… 2026"), or says "latest / recent / emerging / state of the art / this year / past 12 months" | **Recency-led** | At least 70% of the bibliography falls inside the requested window. Most queries carry that range and use date-sorted sources. Older canon remains supporting context. |
+| Fast-moving field such as AI4S, ML, LLM, or computational biology, with no explicit date | **Fast-moving (AI4S default)** | At least 60% of the bibliography comes from the current calendar year and previous two years. In 2026 this is 2024–2026. |
 | Says "history / evolution / development / foundations / comprehensive / from X to Y" | **Timeline-spanning** | Span earliest seminal work → newest. The "cover the canon" guidance below applies in full. |
-| No temporal signal at all | **Balanced (default)** | Mix foundational + recent, but always include the **most recent 12 months** so the survey isn't stale. |
+| Mature field with no temporal signal | **Balanced** | At least 40% comes from the current year and previous two years; retain the canon. |
 
-Write the chosen posture and the parsed timeframe as the first line of `.bib_progress.txt`, e.g. `POSTURE: recency-led | window: 2025-09 .. now | canon cap: 30%`. Every later query-planning and gate decision refers back to it.
+Write the chosen posture and timeframe as the first line of
+`.bib_progress.txt`, e.g. `POSTURE: fast-moving | window: 2024..2026 |
+minimum: 60%`. Compute the rolling calendar-year window from the system year.
+For fast-moving and recency-led profiles after March, at least 5% of references
+must come from the current year.
 
 > **Why the old behaviour failed:** the model reaches for the famous papers it already knows (all 2–3 years old), and the "span the timeline / a bib that's all-2023+ is a snapshot" guidance below *reinforced* that pull. Under a recency-led posture that guidance is **suspended** — there, an all-old bib is the failure, not the goal.
+
+These percentages are coverage gates, not arbitrary date exclusions. Preserve
+seminal methods, original datasets, primary definitions, controversies, and
+directly relevant older evidence.
 
 ### 1. Start with an empty bibliography
 
@@ -134,6 +143,14 @@ The `dimension` field powers the literature table later: papers grouped by sub-a
 ```bash
 cd output/literature-survey/<slug>/survey_paper
 grep -c "^@" bibliography.bib    # should be ≥ 60 (100+ recommended)
+
+# AI4S default. The script derives 2024–2026 when run in 2026.
+python3 check_bibliography_freshness.py bibliography.bib \
+  --profile fast-moving
+
+# For a review explicitly limited to 2026:
+python3 check_bibliography_freshness.py bibliography.bib \
+  --profile recency-led --start-year 2026 --end-year 2026
 ```
 
 Run a `pdflatex + bibtex + pdflatex × 2` pass on the template `main.tex` with the new bib. If `main.bbl` doesn't list everything you expect, the bib has a syntax problem; fix before drafting prose.
@@ -162,7 +179,8 @@ A survey bibliography should also satisfy (read these **through the §0 posture*
 
 ## Quick checklist
 
-- [ ] Picked a search posture from §0 (recency-led / timeline-spanning / balanced) and wrote it + the parsed window to `.bib_progress.txt`
+- [ ] Picked a search posture from §0 (recency-led / fast-moving / balanced / timeline-spanning) and wrote it + the parsed window to `.bib_progress.txt`
+- [ ] Passed `check_bibliography_freshness.py` for that posture
 - [ ] If recency matters: ran date-sorted arXiv queries (§3.5), not just relevance-ranked WebSearch
 - [ ] Planned query angles spanning timeline / family / domain / paradigm / theory / surveys / recent / critiques — weighted by the posture
 - [ ] Each entry backed by a URL fetched in this session (not from memory)

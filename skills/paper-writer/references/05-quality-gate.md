@@ -12,6 +12,7 @@ The gate is bright-line. Do not soften the targets to ship.
 
 ```bash
 cd output/paper-writer/<slug>/latest/paper
+rm -f main.aux main.bbl main.blg main.out main.toc main.lof main.lot
 pdflatex -interaction=nonstopmode main.tex >/dev/null 2>&1
 bibtex main >/dev/null 2>&1
 pdflatex -interaction=nonstopmode main.tex >/dev/null 2>&1
@@ -32,6 +33,90 @@ grep -c "Overfull \\\\hbox" main.log        # target 0 (a stray ≤2pt microtype
 ```
 
 If any of these fail, fix the underlying issue, recompile, recheck. Overfull is a **remediation loop, not a tolerated warning** (unattended runs have no human to spot the spill): a figure/table overrun means it wasn't wrapped per `02`/`04` — wrap TikZ in `\resizebox{\linewidth}{!}{…}`, add `width=\linewidth` to includes, shrink/`tabularx` the table; a long unbreakable token needs `\sloppy`/`\url{}`/a manual break. Recompile until the count is 0.
+
+### G1.2 · Citation and counter order
+
+The template must keep `\bibliographystyle{unsrtnat}`. This numbers references
+from `[1]` in order of first citation; the physical order of entries in
+`bibliography.bib` is irrelevant. Never write citation numbers or object
+numbers into prose/captions, and never reset counters to make the output look
+right.
+
+After the clean build above, verify that the generated bibliography follows
+the citation order recorded by LaTeX:
+
+```bash
+python3 - <<'PY'
+from pathlib import Path
+import re
+
+first_cited = []
+seen_keys = set()
+seen_aux = set()
+
+def walk_aux(path):
+    path = Path(path)
+    if path in seen_aux or not path.is_file():
+        return
+    seen_aux.add(path)
+    for line in path.read_text(errors="replace").splitlines():
+        for group in re.findall(r"\\citation\{([^}]*)\}", line):
+            for key in (part.strip() for part in group.split(",")):
+                if key == "*":
+                    raise SystemExit("FAIL: \\nocite{*} defeats first-citation numbering")
+                if key and key not in seen_keys:
+                    seen_keys.add(key)
+                    first_cited.append(key)
+        for child in re.findall(r"\\@input\{([^}]+\.aux)\}", line):
+            walk_aux(path.parent / child)
+
+walk_aux("main.aux")
+bbl = Path("main.bbl").read_text(errors="replace")
+bibitems = re.findall(r"\\bibitem(?:\[[^\]]*\])?\{([^}]+)\}", bbl)
+if not first_cited or bibitems != first_cited:
+    raise SystemExit(
+        "FAIL: bibliography is not numbered by first citation\n"
+        f"first citations: {first_cited[:10]}\n"
+        f"bibitems:        {bibitems[:10]}"
+    )
+print(f"OK: {len(bibitems)} references numbered from 1 by first citation")
+PY
+
+grep -REn '\\(setcounter|addtocounter)\{(figure|table|equation|section|algorithm|enumiv)\}|\\tag\{[0-9]+\}|\\caption\{.*(Figure|Table|Fig\.|Tab\.)[[:space:]]*[0-9]+' \
+  main.tex sections/ 2>/dev/null
+# must be empty
+```
+
+Figure, table, equation, section, and algorithm numbers are separate LaTeX
+sequences. Each starts at 1 and advances in source order; it is correct for
+Figure 1 and Table 1 to coexist.
+
+### G1.5 · Final-size visual integrity
+
+A successful compile does not prove that a figure or table is readable. Rasterize
+the final paper, not the standalone source files:
+
+```bash
+check_dir=$(mktemp -d)
+pdftoppm -r 200 -png main.pdf "$check_dir/page"
+```
+
+Inspect every page containing a figure or table. This gate fails if:
+
+- figure text is below 7 pt at final size, or labels, ticks, legends,
+  annotations, panel letters, watermarks, or data marks overlap or are clipped;
+- a table crosses a margin, clips content, or uses body text below 8 pt;
+- a data series, row, panel, or heatmap annotation expected from the source is
+  missing;
+- a final paper figure is Mermaid, PlantUML, a generic flowchart/mind-map,
+  diagram-editor screenshot, or notebook/UI screenshot.
+- a figure or table appears before its first discussion, far after the argument
+  it supports, in a contradictory order, or in an unexplained end-of-section
+  cluster.
+
+Regenerate the artifact and repeat this gate. `tight_layout`,
+`constrained_layout`, `bbox_inches="tight"`, and zero overfull boxes are useful
+signals, not substitutes for inspecting the final page.
 
 ### G2 · Bibliography size
 
@@ -92,6 +177,33 @@ remediation until orphans reach 0, in this priority order:
 
 Only after `orphan_count == 0` may you proceed past this gate.
 
+### G2.6 · Temporal coverage matches field velocity
+
+Run the deterministic checker copied with the paper template. Select the same
+profile recorded in `.bib_progress.txt`:
+
+```bash
+# AI4S / ML / LLM default: in 2026, at least 60% must be from 2024–2026.
+python3 check_bibliography_freshness.py bibliography.bib \
+  --profile fast-moving
+
+# A paper explicitly about work from 2026: at least 70% from that window.
+python3 check_bibliography_freshness.py bibliography.bib \
+  --profile recency-led --start-year 2026 --end-year 2026
+```
+
+Other valid profiles are `balanced` (at least 40% in the current three calendar
+years) and `timeline-spanning` (no ratio). The script derives the current year
+at runtime, rejects missing/future years, prints a histogram, and after March
+requires at least 5% current-year references for fast-moving/recency-led work.
+
+This gate measures coverage; it does not authorize excluding seminal or
+directly relevant older work. If it fails, search recent proceedings,
+date-sorted feeds, and current journal issues by each topic angle. If a
+slow-moving field genuinely cannot meet the selected profile, change to
+`balanced` or `timeline-spanning` only with a written reason in
+`.bib_progress.txt`.
+
 ### G3 · Page count
 
 ```bash
@@ -115,7 +227,7 @@ Distribution check (`grep -o` per section file): no section should have zero cit
 
 | Section | Min `\cite{` count |
 |---|---|
-| abstract | 4 |
+| abstract | 0 (default; follow the target venue if it requires otherwise) |
 | introduction | 12 |
 | related_work | 30 |
 | method | 4 |
@@ -123,19 +235,20 @@ Distribution check (`grep -o` per section file): no section should have zero cit
 | results | 5 |
 | conclusion | 4 |
 
-### G5 · Figures and tables in Results
+### G5 · Evidence coverage and placement
 
 ```bash
-grep -c "begin{figure" sections/results.tex     # must be ≥ 1
-grep -c "begin{table" sections/results.tex      # must be ≥ 1
+grep -rh "begin{figure" sections/ | wc -l
+grep -rh "begin{table" sections/ | wc -l
 ```
 
-Plus, somewhere in the paper:
-
-```bash
-grep -rc "begin{figure" sections/ | awk -F: '{s+=$2} END {print s}'   # must be ≥ 3 (incl. method/architecture)
-grep -rc "begin{table"  sections/ | awk -F: '{s+=$2} END {print s}'   # must be ≥ 2 (main + ablation)
-```
+Use the justified 4–8 figure target from `02`; never add an artifact only to
+clear a section quota. A paper making quantitative claims must show the
+supporting comparison in at least one figure or table. Place each artifact
+immediately after the paragraph that first introduces or interprets it:
+mechanism evidence may belong in Method, setup summaries in Experiment,
+comparisons in Results, and context figures elsewhere. Check the rendered
+order, not merely the section counts.
 
 ### G6 · Numbered equations in Method
 
@@ -203,22 +316,6 @@ grep -oE '\\cite\{[^}]+\}' sections/*.tex | awk -F, '{print NF}' | sort -nr | he
 
 Open `sections/conclusion.tex` and verify a limitations paragraph exists. A conclusion without limitations is weaker than one with them.
 
-### S5 · Figures look right
-
-Grep can confirm a figure compiled; it can't confirm a figure is *right* — a heatmap that silently renders with annotations missing from every row but the first (a real `seaborn` bug, not a script mistake) saves without error and passes every G1–G8 gate. Only looking at the render catches that, so do it yourself:
-
-```bash
-pdftoppm -r 200 -png main.pdf /tmp/chk   # one PNG per page
-```
-
-Read each page with a figure and check:
-
-- Every data point/row/panel that the script intended to draw is actually visible — not just the first row, category, or panel (the seaborn trap above is the concrete failure mode; multi-panel and grouped-bar figures can drop data the same way).
-- Text inside the figure is readable at print scale.
-- The figure matches its caption.
-- Color palette is consistent with other figures (or deliberately different for a reason).
-- Tick labels are rotated/sized correctly, nothing overlaps, nothing is clipped at the figure edge.
-
 ## Final report format
 
 When all gates pass, deliver to the user:
@@ -229,13 +326,14 @@ Paper ready: output/paper-writer/<slug>/latest/paper/main.pdf
 Stats:
   Pages:        12
   Bibliography: 247 entries
+  Freshness:    fast-moving; 158/247 (64.0%) from 2024–2026
   \cite{} total: 142 across 7 sections
   Figures:      5 (1 architecture, 3 quantitative, 1 heatmap)
   Tables:       3 (main comparison, ablation, dataset stats)
   Simulated:    yes — marker visible in title \thanks and abstract
   Compile:      0 undefined citations, 0 undefined refs, 1 overfull (line 245, minor)
 
-Quality gate: PASSED (G1–G8 hard, S1–S5 soft).
+Quality gate: PASSED (G1–G8 hard incl. G1.5 final-size visual integrity, S1–S4 soft).
 ```
 
 If you can't pass G1–G4 without compromising honesty, **say so explicitly** instead of shipping a weaker paper:
@@ -247,13 +345,15 @@ That's a legitimate stop. Fabricating entries to clear the gate is not.
 ## Quick checklist
 
 - [ ] G1 compile clean (0 undefined citations / refs)
+- [ ] G1.2 citations begin at 1 and follow first citation; all object numbering is automatic with no counter resets or numbers inside captions
+- [ ] G1.5 final paper rasterized; figure text ≥ 7 pt, table text ≥ 8 pt, no overlap/clipping/margin overflow, no generic diagram-tool output
 - [ ] G2 bibliography ≥ 200 real entries; no `unknown` keys
+- [ ] G2.6 temporal profile recorded and `check_bibliography_freshness.py` passes
 - [ ] G3 PDF ≥ 8 pages
 - [ ] G4 total `\cite{}` ≥ 60 across all sections; per-section minimums hit
-- [ ] G5 results.tex has ≥ 1 figure + ≥ 1 table; paper-wide ≥ 3 figures + ≥ 2 tables
+- [ ] G5 artifacts are justified, follow first-discussion order, and are placed near the prose they support; no fixed section quota
 - [ ] G6 method.tex has ≥ 2 numbered equations
 - [ ] G7 disclosure footnote: human-review clause always present; simulated clause present iff results are simulated
 - [ ] G8 every figure/table/equation label is referenced
-- [ ] S1–S5 soft gates reviewed
-- [ ] Visual sanity check on the rendered PDF
+- [ ] S1–S4 soft gates reviewed
 - [ ] Honest report to user — don't pad to clear gates

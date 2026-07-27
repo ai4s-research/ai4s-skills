@@ -61,6 +61,10 @@ If the dataset was agent-discovered, say so explicitly and name the repository/a
 
 The model / approach being evaluated. Reference `experiment/model.py` for implementation detail. 1–2 paragraphs is enough.
 
+If a displayed equation is necessary, follow it immediately with a “where …”
+sentence defining every symbol, operator, and index not defined earlier in the
+report. Define each symbol once at first use.
+
 ### 5. Results
 
 The substantive section. Two passes:

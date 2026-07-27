@@ -8,7 +8,9 @@ Step 3 of the skill is "rewrite each section into research prose". That instruct
 
 - Every section starts with `\section{Title}\label{sec:slug}`.
 - Cross-references between sections use `Section~\ref{sec:slug}` (non-breaking space to avoid line breaks).
-- Inline citations: `~\cite{key}` for textual flow, `\citep{key}` if using natbib parenthetical style. The current template uses `[numbers,sort&compress]` so `\cite{}` produces `[3, 7]`-style refs — use it.
+- Inline citations: `~\cite{key}` for textual flow, `\citep{key}` if using
+  natbib parenthetical style. The template uses numeric citations and
+  `unsrtnat`, so references begin at `[1]` and advance by first citation.
 - Equations: `\begin{equation} ... \end{equation}` for numbered, `$...$` for inline. Reference with `Eq.~\ref{eq:slug}`.
 - Tables and figures: see `04-layout-discipline.md`.
 - One topic per paragraph. If a paragraph is doing two things, split it.
@@ -17,11 +19,13 @@ Step 3 of the skill is "rewrite each section into research prose". That instruct
 
 ## Abstract — `sections/abstract.tex`
 
-**Length:** 150–250 words. **Citations:** 4–8.
+**Length:** 150–250 words. **Citations:** 0 by default. Keep the abstract
+self-contained; cite there only when the target venue explicitly permits or
+requires it.
 
 **Structure (one paragraph):**
 1. **Domain & motivation** (1 sentence): what the paper is about and why anyone should care.
-2. **Status of the field** (1–2 sentences with grouped citations): what's been tried and where it landed.
+2. **Status of the field** (1–2 sentences): what's been tried and where it landed, without turning the abstract into related work.
 3. **Tension / unresolved question** (1 sentence): what remains debated or unsolved.
 4. **Approach** (1–2 sentences): your contribution at a high level. Name the technical idea.
 5. **Headline result** (1 sentence): the strongest concrete claim ("matches X on Y benchmarks while reducing compute by Z%").
@@ -157,6 +161,10 @@ Reference them: "Eq.~\ref{eq:patch} defines the patch embedding."
 
 **Paragraph — Disclosure (if simulated).** Plain statement that the numbers in the next section are simulated, the specific code path used to generate them, and that production runs must replace them.
 
+Place dataset summaries, protocol tables, or setup diagrams here when this is
+where the prose first needs them. Do not postpone them to Results merely to
+match a template.
+
 **Anti-patterns:**
 - Skipping seeds / variance ("we report a single run").
 - Selectively reporting baselines without justification.
@@ -171,15 +179,25 @@ Reference them: "Eq.~\ref{eq:patch} defines the patch embedding."
 
 **Paragraph — What this section answers.** 2–3 questions you'll answer. Tells the reader what to look for.
 
-**Subsection / paragraph — Main comparison.** Big table with all baselines × all datasets. Use `\begin{table}[!t]` (see `04-layout-discipline.md`). Prose around the table summarises what's interesting (top performer, where the gap is largest, surprises). 5–8 sentences.
+**Subsection / paragraph — Main comparison.** Compare all relevant baselines
+and datasets. A table is usually effective, but place its float immediately
+after the paragraph that first interprets it and choose placement per
+`04-layout-discipline.md`. Summarise what is interesting (top performer, where
+the gap is largest, surprises). 5–8 sentences.
 
-**Subsection / paragraph — Ablation.** Smaller table that systematically removes each component. Prose explains which component carries the weight. 4–6 sentences.
+**Subsection / paragraph — Ablation.** Use a smaller table or plot when the
+evidence supports a component analysis. Prose explains which component carries
+the weight. 4–6 sentences.
 
-**Subsection / paragraph — Visual / qualitative.** A figure that shows what the table can't (per-horizon trend, scaling, attention map, error breakdown). Reference with `\ref{fig:...}`.
+**Subsection / paragraph — Visual / qualitative.** When useful, use a figure
+that shows what prose or a table cannot (per-horizon trend, scaling, attention
+map, error breakdown). Reference with `\ref{fig:...}`.
 
 **Subsection / paragraph — Caveats / when not to use.** Honest paragraph noting where the method does *not* help (small data, weak periodicity, etc.). This builds trust.
 
-**Tables:** 1–2 in this section. Always with `\begin{table}[!t]`, `booktabs`, caption, label.
+Figures and tables are paper-level evidence, not section quotas. Results often
+owns quantitative comparisons, but each artifact belongs wherever it is first
+interpreted. Use `booktabs`, captions, labels, and automatic numbering.
 
 **Anti-patterns:**
 - "Our method is better." — without saying by how much, on what, against whom.
@@ -219,12 +237,12 @@ A paper that breaks these promises feels disjointed even if every section is ind
 ## Quick checklist
 
 - [ ] Each section has `\section{}\label{sec:...}` and is referenced from at least one other section.
-- [ ] Abstract: 4–8 cites; one paragraph; headline result with numbers.
+- [ ] Abstract: one self-contained paragraph with no citations unless the target venue explicitly requires them; headline result with numbers.
 - [ ] Introduction: 12–20 cites; 3–4 paragraphs; explicit "First / Second / Third" contributions.
 - [ ] Related Work: 30–60 cites; themed `\paragraph{}`; each theme positions the paper.
 - [ ] Method: 4–8 cites; ≥ 2 numbered equations; explicit complexity statement.
 - [ ] Experiment: 5–10 cites; datasets / baselines / protocol / disclosure.
-- [ ] Results: 5–10 cites; main table + ablation + figure; caveat paragraph.
+- [ ] Results: 5–10 cites; interprets the available comparison, ablation, or qualitative evidence without fixed artifact quotas; includes a caveat paragraph.
 - [ ] Conclusion: 4–8 cites; summary / future / limitations.
 - [ ] Notation consistent across sections.
 - [ ] First-person plural ("we") throughout.

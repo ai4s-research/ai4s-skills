@@ -4,14 +4,29 @@
 
 A research paper's figures tend to be experimental: tables of numbers, training curves, confusion matrices. A survey's figures are *organisational*: how is the field structured, when did things happen, who works on what. They are how a reader navigates the survey. Without good figures a survey is a long list of references; with them it becomes a map.
 
-**Hard targets:** **6–10 figures** spanning these families:
+**Target:** **6–10 justified figures** selected from these families:
 
-- **At least 1 taxonomy / classification diagram** (TikZ tree or hierarchy)
-- **At least 1 chronological timeline** of major works
-- **At least 1 area / capability matrix** (coverage heatmap)
-- **1–2 representative architecture / mechanism diagrams** (TikZ)
-- **1–2 quantitative trend plots** (matplotlib publication style)
-- Optional: paradigm comparison, citation-co-occurrence map, geographic / institutional map
+- taxonomy / classification diagram when the literature has defensible branches;
+- chronological timeline when chronology explains a transition;
+- area / capability matrix when comparable coverage data exists;
+- architecture / mechanism diagram when a shared mechanism needs explanation;
+- quantitative trend plot when extracted data supports it;
+- paradigm comparison, citation network, or geographic / institutional map when
+  that relationship is itself part of the analysis.
+
+Never create a figure only to reach the target count.
+
+### Publication-medium gate
+
+- Use matplotlib/seaborn for extracted quantitative evidence, purpose-built
+  TikZ/SVG/PDF for a taxonomy or mechanism, and scientific image panels only
+  with source and processing provenance.
+- Do not deliver Mermaid, PlantUML, generic flowchart/mind-map output,
+  diagram-editor screenshots, or notebook/UI screenshots as survey figures.
+  Graphviz is acceptable only when the graph itself is analysed data, such as a
+  citation network.
+- Do not use decorative roadmaps, funnels, icon collages, or stock process
+  diagrams. A figure must expose evidence, structure, or mechanism.
 
 ## Design figures for THIS research — aim at the Nature/Science bar
 
@@ -35,17 +50,18 @@ Two real failures this playbook used to cause. Read both before you draw anythin
 ```python
 import matplotlib as mpl
 WONG = ["#000000","#E69F00","#56B4E9","#009E73","#F0E442","#0072B2","#D55E00","#CC79A7"]
+LINE_COLORS = [WONG[5],WONG[6],WONG[3],WONG[7],WONG[2],WONG[1]]
 mpl.rcParams.update({
     "font.family":"sans-serif", "font.sans-serif":["Helvetica","Arial","DejaVu Sans"],
     "font.size":7, "axes.labelsize":7, "axes.titlesize":7,
-    "xtick.labelsize":6.5, "ytick.labelsize":6.5, "legend.fontsize":6.5,
+    "xtick.labelsize":7, "ytick.labelsize":7, "legend.fontsize":7,
     "axes.linewidth":0.6, "axes.spines.top":False, "axes.spines.right":False,
     "xtick.direction":"out", "ytick.direction":"out",
     "xtick.major.size":2.5, "ytick.major.size":2.5,
     "xtick.major.width":0.6, "ytick.major.width":0.6,
     "axes.grid":False, "lines.linewidth":1.2, "lines.markersize":3.5,
     "savefig.dpi":400, "savefig.bbox":"tight", "pdf.fonttype":42, "ps.fonttype":42,
-    "axes.prop_cycle": mpl.cycler(color=WONG[1:]),
+    "axes.prop_cycle": mpl.cycler(color=LINE_COLORS),
 })
 # figsize: single column = (89/25.4, h); double column / 2-panel = (183/25.4, h)
 ```
@@ -77,7 +93,7 @@ Fix: wrap the picture so its *rendered width* is clamped.
 - **Includes:** always `\includegraphics[width=\linewidth]{…}` (or `0.85–0.95\linewidth`), never a bare `\includegraphics{file}`. matplotlib `figsize` then only sets aspect ratio; keep its width ≤ 6.2 in so in-figure fonts aren't double-shrunk.
 
 ```latex
-\begin{figure}[!t]
+\begin{figure}[htbp]
   \centering
   \resizebox{\linewidth}{!}{%
     \begin{tikzpicture}[ ... ] ... \end{tikzpicture}%
@@ -121,7 +137,10 @@ Naming: `fig_<NN>_<short-slug>.pdf`. Numbers correspond to citation order.
 
 ## Family 1 — Taxonomy / classification diagrams (TikZ)
 
-The single most important survey figure. A taxonomy figure says: *here is how I cut the field*. Readers will refer back to it constantly.
+Use this family when a defensible hierarchy is the survey's organising lens. A
+taxonomy figure says: *here is how I cut the field*. Do not create one when the
+literature is better organised by themes, evidence tiers, chronology, or another
+structure.
 
 ### Setup
 
@@ -140,7 +159,7 @@ In `survey_paper/main.tex`:
 **Flat, sans-serif, journal-style top-down (default; good up to ~12 leaves).** Define two colours once in `main.tex` (`\definecolor{nblue}{HTML}{0072B2}` and `\definecolor{nfill}{HTML}{EAF2FB}`, `\definecolor{ngrey}{HTML}{4D4D4D}`); thin uniform grey strokes + one accent + sans labels is the Nature diagram look — not the heavy blue/orange boxes the old sample used. **Replace every label with your own taxonomy.**
 
 ```latex
-\begin{figure}[!t]
+\begin{figure}[htbp]
   \centering
   \resizebox{\linewidth}{!}{%
   \begin{forest}
@@ -155,7 +174,7 @@ In `survey_paper/main.tex`:
     ]
   \end{forest}%
   }
-  \caption{\textbf{Figure 1.} Open-source LLM research organises into four lineages. Each leaf cites its primary source; full coverage in Section~\ref{sec:methods}.}
+  \caption{Open-source LLM research organises into four lineages. Each leaf cites its primary source; full coverage in Section~\ref{sec:methods}.}
   \label{fig:taxonomy}
 \end{figure}
 ```
@@ -382,9 +401,8 @@ This skill has no default figure (unlike experiment-suite). All figures are agen
 - [ ] Every TikZ/forest figure wrapped in `\resizebox{\linewidth}{!}{…}` as a width backstop (after spacing is correct, not instead of it)
 - [ ] Every `\includegraphics` has `width=…\linewidth`; matplotlib `figsize` width ≤ 6.2 in
 - [ ] No `figure*` used to "gain width" (single-column template); many-leaf trees go horizontal / fold, not squashed
-- [ ] At least 1 taxonomy diagram; cited from §Methods or §Background
-- [ ] At least 1 timeline; cited from §Introduction
-- [ ] At least 1 capability / coverage matrix; cited from §Discussion
+- [ ] Every selected figure family is justified by the topic; no mandatory trio or filler
+- [ ] No Mermaid, PlantUML, generic flowchart/mind-map, or editor/UI screenshot
 - [ ] 6–10 figures total
 - [ ] All figure files are vector PDF; fonts embedded (`pdf.fonttype=42`)
 - [ ] Each figure referenced in prose with `\ref{fig:...}`

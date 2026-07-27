@@ -31,6 +31,9 @@ Reviewer risk:
 - If removing a panel does not weaken the argument, remove or merge it.
 - Give the main result the clearest panel; do not make every subplot equally important by default.
 - Keep controls and robustness panels visually quieter than the hero panel.
+- For `schematic-led composite`, draw a purpose-built scientific schematic in
+  TikZ/SVG/PDF. Do not substitute Mermaid, PlantUML, a generic flowchart,
+  mind-map, or editor screenshot.
 
 ## Figure archetypes
 

@@ -16,7 +16,7 @@ Every intermediate result is written to disk **immediately**, not held in the co
 
 - Each new BibTeX entry → appended to `output/paper-writer/<slug>/latest/paper/bibliography.bib` the moment it's extracted from a WebSearch result, not after all queries finish.
 - Each rewritten section → written to `output/paper-writer/<slug>/latest/paper/sections/<name>.tex` the moment it's drafted, not after all 7 are drafted.
-- Each generated figure → committed to `output/paper-writer/<slug>/latest/paper/figures/fig_NN_<name>.pdf` and the matching script saved alongside.
+- Each generated figure → committed to `output/paper-writer/<slug>/latest/paper/figures/fig_NN_<name>.pdf` and the matching script saved alongside. Assign `NN` only after planning narrative first-use order; it is a file-order aid, never a manually written caption number.
 
 Why: if the conversation context fills, the agent crashes, or the user asks a sideways question, **the files survive**. Resumption reads the files and continues.
 

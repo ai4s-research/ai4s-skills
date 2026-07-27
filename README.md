@@ -40,7 +40,7 @@ audits, with every citation, number, and figure traceable to its source.
 |---|---|---|
 | [ai4s-agent](skills/ai4s-agent/SKILL.md) | Runs the four skills below in order | the full package |
 | [research-explorer](skills/research-explorer/SKILL.md) | Explore topics from a broad direction | `research_exploration.md`, `topic_matrix.md`, `literature_pre_survey.md` |
-| [literature-survey](skills/literature-survey/SKILL.md) | Write a literature survey | 6–20 pp PDF, 60+ real citations, LaTeX source, taxonomy figures |
+| [literature-survey](skills/literature-survey/SKILL.md) | Write a literature survey | 6–20 pp PDF, 60+ real citations, LaTeX source, topic-specific figures |
 | [experiment-suite](skills/experiment-suite/SKILL.md) | Build an experiment package | design doc, runnable code, `results.json` with provenance, figures, report |
 | [paper-writer](skills/paper-writer/SKILL.md) | Write a research paper | 8–14 pp PDF, 200+ citations, 4–8 figures, tables |
 | [mindmap-render](skills/mindmap-render/SKILL.md) | Render a mindmap | image from a `topic_matrix.md` (Python script) |
@@ -77,7 +77,7 @@ The focus of the project. Every skill enforces:
 | **Labelled numbers** | Every number is marked `measured`, `simulated`, or `illustrative`; simulated values are never reported as measured. |
 | **Runnable experiments** | `experiment-suite` outputs runnable code and a `results.json` with provenance. Supply real results and they replace the simulated ones; the "simulated" disclosure is then removed. |
 | **Resumable runs** | Long tasks save progress after each step and continue from the last checkpoint, so a reported "done" reflects completed work. |
-| **Publication layout** | booktabs tables, `[!t]` floats, `~\cite{}`; vector-PDF figures with embedded fonts and defined color palettes. |
+| **Publication layout** | Readable booktabs tables; final-size raster QA; vector-PDF figures with embedded fonts, shared color-safe styling, and no generic diagram-tool output. |
 | **Review disclosure** | Every generated document states that domain-expert review is recommended. |
 | **Integrity checks** | `integrity-auditor` inspects a paper for image, numerical, and logical problems and grades the evidence. |
 

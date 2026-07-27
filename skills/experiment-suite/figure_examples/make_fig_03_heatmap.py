@@ -34,7 +34,7 @@ sns.heatmap(
 ax.set_xticklabels(ax.get_xticklabels(), rotation=30, ha="right")
 ax.set_yticklabels(ax.get_yticklabels(), rotation=0)
 add_panel_label(ax, "(b)")
-add_simulated_watermark(ax, y=-0.16)
+add_simulated_watermark(ax)
 
 plt.tight_layout(pad=0.4)
 out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fig_03_method_x_dataset_heatmap")

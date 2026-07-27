@@ -11,7 +11,7 @@ A first draft is usually layout-naive: tables are bare `\begin{tabular}` blocks,
 A bare `\begin{tabular}` in body text gets the wrong placement, no caption, no label, and breaks awkwardly across columns. Wrap every table:
 
 ```latex
-\begin{table}[!t]
+\begin{table}[htbp]
   \centering
   \small                                  % font
   \setlength{\tabcolsep}{4pt}             % column padding
@@ -37,21 +37,49 @@ Two things in this example are provenance-conditional, per `06-experiment-proven
 
 ### Float placement
 
-- `[!t]` — top of column/page. Default for tables and figures in research papers.
-- `[!t]` failing repeatedly → try `[!ht]` (top, otherwise here).
-- Avoid `[h]` and `[h!]` — they cause floats to land in the middle of paragraphs and almost always look wrong.
-- Avoid `[H]` (forced placement, requires `float` package) except when necessary.
+- **Narrative ownership comes first.** Put the float source immediately after
+  the first paragraph that introduces, explains, or interprets it. A mechanism
+  figure usually belongs in Method, a dataset/setup table in Experiment, and a
+  result plot where its finding is first discussed. These are examples, not
+  fixed slots.
+- **Preserve first-use order.** Order figure blocks by the prose's first
+  `Figure~\ref{...}` references and table blocks by the first
+  `Table~\ref{...}` references. Do not collect all floats at a section end.
+- `[htbp]` — use for a compact artifact whose meaning depends on nearby prose.
+- `[tbp]` — use for a larger artifact that may move to the top, bottom, or a
+  float page without breaking the argument.
+- `[p]` — use for a full-page or unusually tall artifact.
+- `[!t]` is an occasional editorial choice, not a universal default.
+- Avoid `[H]`; exact pinning creates white space and brittle pagination.
 - This template is **single-column** `article`, so `table*`/`figure*` span nothing extra. For a wide table that overruns the text width, fit it by the ladder in "Font size standard" below — never by `\resizebox`. (Only switch to `table*` if you have actually moved this paper to a two-column class.)
+
+LaTeX may move a float within these legal positions. Judge the rendered paper:
+the artifact must remain near its first discussion, must not precede that
+discussion, and must not form an unexplained cluster far later in the paper.
+If a float crosses into an unrelated section after source order and size have
+been corrected, insert `\FloatBarrier` at that semantic boundary. The template
+loads `placeins`; use barriers sparingly, never after every float.
 
 ### Font size standard (uniform across the paper)
 
 Tables must look like one paper, not a collage. Exactly two sizes are allowed:
 
 - **Default: `\small`** — every table starts here.
-- **Wide tables: `\footnotesize`** — only when the table genuinely overruns the text width at `\small`.
+- **Wide tables: `\footnotesize`** — only after the structural fitting steps
+  below still leave a genuine overrun at `\small`.
 - **Never** `\scriptsize`/`\tiny`, and **never wrap a `tabular` in `\resizebox`/`\scalebox`** — scaling picks an arbitrary effective font size per table, which is exactly how one table ends up huge and the next unreadably small.
 
-If a table still overflows at `\footnotesize`, shrink the *content*, in this order: tighter `\tabcolsep` (down to 3pt) → abbreviate headers (`Concept Stability` → `C-Stab.`, expand in caption) → drop or merge low-value columns → transpose → split into two tables. `tabularx` with `X` columns is fine for wrapping text columns.
+Fit an over-wide table in this order:
+
+1. Shorten or wrap headers; move units and details into the caption or notes.
+2. Use `tabularx` for text columns and `siunitx`/right alignment for numbers.
+3. Drop or merge low-value columns, transpose, or split into two tables; move
+   secondary detail to an appendix.
+4. Tighten `\tabcolsep`, but not below 3 pt.
+5. Use `\footnotesize` only if the table still overruns at `\small`.
+
+Never shrink type first. If the table still does not fit at `\footnotesize`,
+redesign or split it.
 
 ### Style
 
@@ -73,7 +101,7 @@ A caption must let a reader who reads only the caption + table understand what's
 ### Float wrapper
 
 ```latex
-\begin{figure}[!t]
+\begin{figure}[htbp]
   \centering
   \includegraphics[width=0.95\linewidth]{figures/fig_02_horizon_sweep.pdf}
   \caption{MSE vs.\ forecast horizon on ETTm1. Curves cross around $H{=}192$, illustrating that...}
@@ -97,7 +125,7 @@ Same standalone-readable rule as tables. Caption goes **below** the figure (afte
 ### Multi-panel
 
 ```latex
-\begin{figure}[!t]
+\begin{figure}[tbp]
   \centering
   \begin{subfigure}[t]{0.48\linewidth}
     \includegraphics[width=\linewidth]{figures/fig_a.pdf}
@@ -118,6 +146,23 @@ Same standalone-readable rule as tables. Caption goes **below** the figure (afte
 The template already loads `subcaption`. Reference panels with `\ref{fig:panel_a}`.
 
 ## Cross-references
+
+### Automatic numbering only
+
+Use `\cite{key}`, `\caption` + `\label`, numbered equation environments, and
+`\ref`. The template's `unsrtnat` bibliography style numbers references from
+`[1]` by order of first citation. Figure, table, equation, section, and
+algorithm counters independently start at 1 and advance in source order.
+
+Never:
+
+- type `[17]`, `Figure 4`, or `Table 2` as a substitute for `\cite`/`\ref`;
+- put a number such as `Figure 1.` inside a caption;
+- use `\tag{7}`, `\setcounter`, or `\addtocounter` to manufacture numbering;
+- assume the order of entries in `bibliography.bib` determines citation numbers.
+
+Place `\label` immediately after `\caption` so it captures the float's assigned
+number.
 
 ### Every label must be referenced
 
@@ -247,9 +292,10 @@ pdfinfo main.pdf | grep Pages                # must be ≥ target
 
 ## Quick checklist
 
-- [ ] Every table wrapped in `\begin{table}[!t]` with caption + label, using `booktabs`
+- [ ] Every table wrapped in a float with caption + label, using `booktabs`; placement chosen from narrative need
 - [ ] Table fonts uniform: `\small` default, `\footnotesize` for wide ones; no `\resizebox`/`\scalebox` on any `tabular`
-- [ ] Every figure wrapped in `\begin{figure}[!t]` with caption + label
+- [ ] Every figure wrapped in a float with caption + label; source follows its first discussion instead of a fixed section
+- [ ] Citation and object numbering is automatic, starts at 1, and follows first appearance; no manual display numbers or counter resets
 - [ ] Captions are standalone-readable (1–3 sentences, not "Results.")
 - [ ] Cross-refs use non-breaking space (`~`)
 - [ ] Best cell per row bolded; never bold by default

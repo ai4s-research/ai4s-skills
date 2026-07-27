@@ -1,6 +1,6 @@
 ---
 name: literature-survey
-description: Use when the user wants a comprehensive literature survey on a specific research topic. Outputs a complete PDF survey (6–20 pages, 60+ real citations, 100+ recommended) with LaTeX source, taxonomy figures, and a classified literature table. Single-stage, no Python runtime.
+description: Use when the user wants a comprehensive literature survey on a specific research topic. Outputs a complete PDF survey (6–20 pages, 60+ real citations, 100+ recommended) with LaTeX source, topic-specific publication figures, and a classified literature table. Single-stage, no Python runtime.
 ---
 
 # Literature Survey
@@ -71,26 +71,34 @@ Open `references/00-incremental-execution.md` first. Then carry out the five tra
 
 **Open:** `references/01-bibliography-expansion.md`.
 
-**First (§0 of that reference): read the topic's temporal/scope intent and pick a search posture.** If the topic names a year or says "latest/recent" (e.g. "OpenSource LLM **2026**"), go *recency-led* — date-sorted arXiv queries carrying the explicit year, canon only as context. Otherwise span the timeline. This is what prevents "asked for 2026, got all 2024".
+**First (§0 of that reference): read the topic's temporal/scope intent and pick
+a search posture.** AI4S and similarly fast-moving fields default to at least
+60% of references from the current calendar year and previous two years. If
+the topic names a year or says "latest/recent", use the stricter recency-led
+profile. Historical/theoretical surveys retain a timeline-spanning exception.
 
 Then plan **12–20** query angles, weighted by the posture. For each angle: WebSearch → triage → WebFetch each kept candidate's abstract URL → extract canonical title/authors/year/venue/url → append a BibTeX entry to `$RUN/bibliography.bib`. **Every entry must originate from a URL fetched in this session.** Memory entries forbidden.
 
-**Hard stop:** do not draft prose until `grep -c "^@" $RUN/bibliography.bib` ≥ 60 (aim for 100+).
+**Hard stop:** do not draft prose until the bibliography has ≥ 60 entries
+(100+ recommended) and passes `check_bibliography_freshness.py` for the
+recorded profile.
 
 #### 3.2 Figures — 6–10 survey-shaped
 
 **Open:** `references/02-survey-figures.md`.
 
-A survey is defined by how well it organises a field; figures carry that organisation:
+A survey is defined by how well it organises a field. Choose 6–10
+topic-specific figures from the families that the evidence supports:
 
-- 1 taxonomy / classification diagram (TikZ hierarchy)
-- 1 chronological timeline of major works
-- 1 area / capability matrix (coverage heatmap)
-- 1–2 representative architecture / mechanism diagrams
-- 1–2 quantitative trend plots (matplotlib publication style)
-- Optional: citation network, paradigm comparison
+- taxonomy / classification diagram when the field has defensible branches;
+- timeline when chronology explains a change in the field;
+- area / capability matrix when comparable coverage data exists;
+- architecture / mechanism diagram when a shared mechanism needs explanation;
+- quantitative trend plots when extracted data supports them;
+- citation network or paradigm comparison when the relationship itself matters.
 
-Save each into `$RUN/figures/` with reproducible source alongside.
+Never force a family to fill a slot. Save each figure into `$RUN/figures/` with
+reproducible source alongside.
 
 #### 3.3 Sections — survey-shaped prose
 
@@ -102,7 +110,15 @@ Survey sections differ in shape from research-paper sections. Order: introductio
 
 **Open:** `references/04-layout-discipline.md`.
 
-Wrap every table in `\begin{table}[!t]` with booktabs; every figure in `\begin{figure}[!t]`. Use `~\cite{}` and `~\ref{}`. Set `\author{AI4S Agent}` with a `\thanks` footnote that **always** recommends human review. Surveys carry no simulated numerical experiments, so do **not** include a simulated clause.
+Put each figure or table in the section whose prose first introduces or
+interprets it, immediately after that paragraph in the source. Use standard
+LaTeX floats with booktabs for tables and choose `[htbp]`, `[tbp]`, or `[p]`
+from the artifact's size and narrative role; do not force a common position or
+section. Use `~\cite{}` and `~\ref{}`. Let LaTeX assign citation, figure,
+table, equation, and section numbers from 1 in first-appearance order; never
+type display numbers manually. Set `\author{AI4S Agent}` with a `\thanks`
+footnote that **always** recommends human review. Surveys carry no simulated
+numerical experiments, so do **not** include a simulated clause.
 
 #### 3.5 Compile + quality gate
 
@@ -114,7 +130,9 @@ pdflatex -interaction=nonstopmode main.tex
 pdflatex -interaction=nonstopmode main.tex
 ```
 
-**Open:** `references/05-quality-gate.md`. Survey-specific targets: ≥ 60 bib entries (100+ recommended), ≥ 6 pages, ≥ 1 taxonomy figure, ≥ 1 timeline.
+**Open:** `references/05-quality-gate.md`. Survey-specific targets: ≥ 60 bib
+entries (100+ recommended), ≥ 6 pages, and only figures justified by the topic's
+evidence.
 
 If a gate cannot honestly be met (e.g., the field is genuinely small), say so explicitly. Do not pad.
 

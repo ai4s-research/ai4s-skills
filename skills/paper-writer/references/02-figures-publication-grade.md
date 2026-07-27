@@ -2,14 +2,30 @@
 
 ## Why this exists
 
-Real research papers carry 4–8 figures spanning multiple types: an architecture diagram, several quantitative comparisons, sometimes a heatmap, sometimes a multi-panel breakdown. If the `experiment-suite` skill has already produced baseline figures for the same topic, reuse them by symlink or copy; otherwise generate them here. This reference explains how to produce each family at publication quality.
+Real research papers carry figures that make their claims easier to verify. If
+the `experiment-suite` skill has already produced baseline figures for the same
+topic, reuse them by symlink or copy; otherwise generate them here. This
+reference explains how to produce each family at publication quality.
 
-**Hard targets:**
-- ≥ 1 architecture / pipeline diagram (TikZ recommended for vector quality)
-- ≥ 2 quantitative comparison plots (matplotlib with publication styling)
-- ≥ 1 of: heatmap (seaborn) / multi-panel (matplotlib subplots) / radar / sankey / parallel coordinates — **only when the data justifies it**, never as decoration
+**Target:** 4–8 justified figures chosen from the families below. An
+architecture / pipeline diagram is appropriate only when the paper introduces
+or compares a real method whose mechanism needs explanation. Quantitative,
+heatmap, multi-panel, radar, Sankey, or parallel-coordinate figures require data
+that supports them. Never create a figure only to fill a slot.
 
 **Taste rule:** every figure must answer a question the reader is asking at that point in the paper. Don't add a figure because the slot exists; add it because the prose hits a moment where readers need to *see* something.
+
+### Publication-medium gate
+
+- Use matplotlib/seaborn for quantitative evidence, purpose-built TikZ/SVG/PDF
+  for a method schematic, and scientific image panels only with source, crop,
+  scale, and processing provenance.
+- Do not deliver Mermaid, PlantUML, generic flowchart/mind-map output,
+  diagram-editor screenshots, or notebook/UI screenshots as paper figures.
+  Graphviz is acceptable only when the graph itself is analysed data, not as a
+  shortcut for a generic process diagram.
+- Do not use decorative roadmaps, funnels, icon collages, or stock process
+  diagrams. If a figure carries neither evidence nor mechanism, remove it.
 
 ## Aim at the Nature/Science bar — and design, don't copy
 
@@ -48,9 +64,12 @@ If a figure is a **hierarchy or tree** (taxonomy, ablation tree, call graph), bu
 
 ### Standalone figure file
 
-Create `figures/fig_NN_architecture.tex`. Wrap the figure into a tikzpicture environment, save it as a standalone tex, and either:
+Create a semantically named source such as `figures/model_architecture.tex`.
+Wrap the figure into a tikzpicture environment, save it as a standalone tex,
+and either:
 
-(a) `\input` it directly inside `\begin{figure}[!t] ... \end{figure}` in `results.tex`, OR
+(a) `\input` it directly inside a `figure` float in the section whose prose
+first explains the mechanism, immediately after that paragraph, OR
 (b) compile it standalone via the `standalone` document class to a separate `.pdf` then `\includegraphics`.
 
 Option (a) is simpler for one-off figures.
@@ -58,7 +77,7 @@ Option (a) is simpler for one-off figures.
 ### Skeleton template
 
 ```latex
-\begin{figure}[!t]
+\begin{figure}[htbp]
   \centering
   \resizebox{\linewidth}{!}{%
   \begin{tikzpicture}[
@@ -114,9 +133,9 @@ plt.rcParams.update({
     "font.size": 7,
     "axes.labelsize": 7,
     "axes.titlesize": 7,
-    "xtick.labelsize": 6.5,
-    "ytick.labelsize": 6.5,
-    "legend.fontsize": 6.5,
+    "xtick.labelsize": 7,
+    "ytick.labelsize": 7,
+    "legend.fontsize": 7,
     "axes.linewidth": 0.6,
     "axes.spines.top": False, "axes.spines.right": False,
     "xtick.direction": "out", "ytick.direction": "out",
@@ -133,7 +152,8 @@ plt.rcParams.update({
 
 # Wong colour-blind-safe palette (Nature-recommended). Direct-label series; avoid legend boxes.
 WONG = ["#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7"]
-COLORS = WONG[1:]   # skip black for line series
+# High-contrast order for marks on white; reserve yellow for fills or dark-edged marks.
+COLORS = [WONG[5], WONG[6], WONG[3], WONG[7], WONG[2], WONG[1]]
 # Nature column widths: single = 89/25.4 in, double = 183/25.4 in — set figsize from these.
 
 # Data ---------------------------------------------------------------
@@ -359,11 +379,11 @@ Either way, the final inventory inside `$RUN/figures/` is what compiles into the
 
 ## Quick checklist
 
-- [ ] At least 1 architecture diagram (TikZ) included
-- [ ] At least 2 quantitative plots with publication style (font, palette, dpi, sizing)
-- [ ] At least 1 heatmap or multi-panel where the data warrants it
+- [ ] Every figure is justified by a claim or mechanism; no forced architecture or stock figure
+- [ ] Quantitative plots use publication style (font, palette, dpi, sizing)
+- [ ] Heatmap or multi-panel figures appear only where the data warrants them
 - [ ] All figure files vector PDF; fonts embedded (`pdf.fonttype=42`)
 - [ ] Each figure referenced in prose with `\ref{fig:...}`
 - [ ] Every figure has a caption that stands alone (a reader who only sees the figure should understand it)
-- [ ] No 3-D bars, no pie charts, no rainbow palettes, no raster screenshots
+- [ ] No Mermaid, PlantUML, generic flowchart/mind-map, 3-D bars, pie charts, rainbow palettes, or screenshots
 - [ ] Zero text collisions: PNG sibling of every figure visually inspected; tick labels short/wrapped per the collision rules; watermarks in empty corners

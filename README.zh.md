@@ -38,7 +38,7 @@
 |---|---|---|
 | [ai4s-agent](skills/ai4s-agent/SKILL.md) | 按顺序运行下面四个 | 完整研究包 |
 | [research-explorer](skills/research-explorer/SKILL.md) | 从宽泛方向做选题探索 | `research_exploration.md`、`topic_matrix.md`、`literature_pre_survey.md` |
-| [literature-survey](skills/literature-survey/SKILL.md) | 撰写文献综述 | 6–20 页 PDF、60+ 真引用、LaTeX 源码、分类法图 |
+| [literature-survey](skills/literature-survey/SKILL.md) | 撰写文献综述 | 6–20 页 PDF、60+ 真引用、LaTeX 源码、选题特定图形 |
 | [experiment-suite](skills/experiment-suite/SKILL.md) | 构建实验包 | 设计文档、可跑代码、带 provenance 的 `results.json`、图、报告 |
 | [paper-writer](skills/paper-writer/SKILL.md) | 撰写研究论文 | 8–14 页 PDF、200+ 引用、4–8 图、表格 |
 | [mindmap-render](skills/mindmap-render/SKILL.md) | 渲染脑图 | 由 `topic_matrix.md` 生成图(Python 脚本) |
@@ -73,7 +73,7 @@ integrity-auditor ──▶ 审计任意论文:外部 PDF / DOI / arXiv,或 [4] 
 | **数字标注来源** | 每个数字都标 `measured` / `simulated` / `illustrative`;模拟值绝不当作实测报告。 |
 | **可跑实验** | `experiment-suite` 产出可运行代码和带 provenance 的 `results.json`。提供实测结果后即替换模拟值,"simulated" 声明随之去除。 |
 | **可续跑** | 长任务每步存盘、断点续跑;报告"完成"即代表工作真正完成。 |
-| **发表级版式** | booktabs 表格、`[!t]` 浮动、`~\cite{}`;矢量 PDF 图,内嵌字体、指定配色。 |
+| **发表级版式** | 可读的 booktabs 表格、最终尺寸栅格检查、内嵌字体与统一安全配色的矢量 PDF 图；拒绝通用图表工具产物。 |
 | **复核声明** | 每份生成文档都注明建议由领域专家复核。 |
 | **完整性检查** | `integrity-auditor` 检查论文的图像、数值、逻辑问题,并对证据分级。 |
 

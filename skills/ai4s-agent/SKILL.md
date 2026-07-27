@@ -73,6 +73,10 @@ output/literature-survey/<topic_slug>/latest/survey_paper/
 output/literature-survey/<topic_slug>/latest/literature_table.md
 ```
 
+The survey bibliography must pass the temporal profile selected by
+`literature-survey`; AI4S defaults to at least 60% from the current calendar
+year and previous two years.
+
 ### Step 4 — Experiment package
 
 Load the `experiment-suite` skill with `$TOPIC`. It produces:
@@ -93,6 +97,9 @@ If a real results path was provided in Step 1, the agent loads it here and `resu
 Load the `paper-writer` skill with `$TOPIC`. Its cross-skill conventions automatically pick up Steps 3 and 4:
 
 - Seeds `bibliography.bib` from `output/literature-survey/<topic_slug>/latest/survey_paper/bibliography.bib`, then expands it to 200+ inside paper-writer if needed.
+- Re-runs the paper-writer freshness gate after expansion; adding older
+  foundational references must not silently make a fast-moving bibliography
+  stale.
 - Reads numbers and provenance from `output/experiment-suite/<topic_slug>/latest/results.json`.
 - Copies/symlinks the publication-grade figures from `output/experiment-suite/<topic_slug>/latest/figures/`.
 

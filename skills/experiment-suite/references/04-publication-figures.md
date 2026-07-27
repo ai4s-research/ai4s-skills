@@ -11,6 +11,17 @@ The simulator emits one default chart (`fig_01_comparison_<metric>.pdf`) with de
 
 Before plotting, open `references/04a-figure-contract.md` and define the figure contract. The chart serves the claim, not the other way around.
 
+## Publication-medium gate
+
+- Use matplotlib/seaborn for quantitative evidence, purpose-built TikZ/SVG/PDF
+  for a method schematic, and scientific image panels only with source, crop,
+  scale, and processing provenance.
+- Do not deliver Mermaid, PlantUML, generic flowchart/mind-map output,
+  diagram-editor screenshots, or notebook/UI screenshots as experiment or paper
+  figures. Graphviz is acceptable only when the graph itself is analysed data.
+- Do not use decorative roadmaps, funnels, icon collages, or stock process
+  diagrams. Every figure must expose evidence, experimental design, or mechanism.
+
 ## File layout
 
 All figures live under `output/experiment-suite/<slug>/figures/` with a `make_fig_NN_<slug>.py` script alongside the rendered `.pdf`. The script is the source of truth — re-running the script reproduces the figure. Update `manifest.json` when adding figures.
@@ -23,21 +34,21 @@ Apply at the top of every figure script:
 
 ```python
 plt.rcParams.update({
-    "font.family": "serif",
-    "font.serif": ["Times New Roman", "DejaVu Serif"],
-    "font.size": 9,
-    "axes.labelsize": 9,
-    "axes.titlesize": 10,
+    "font.family": "sans-serif",
+    "font.sans-serif": ["Helvetica", "Arial", "DejaVu Sans"],
+    "font.size": 8,
+    "axes.labelsize": 8,
+    "axes.titlesize": 8,
     "xtick.labelsize": 8,
     "ytick.labelsize": 8,
     "legend.fontsize": 8,
     "axes.linewidth": 0.6,
-    "axes.grid": True,
-    "grid.alpha": 0.25,
-    "grid.linewidth": 0.4,
-    "lines.linewidth": 1.4,
-    "lines.markersize": 4.5,
-    "savefig.dpi": 300,
+    "axes.spines.top": False,
+    "axes.spines.right": False,
+    "axes.grid": False,
+    "lines.linewidth": 1.2,
+    "lines.markersize": 3.5,
+    "savefig.dpi": 400,
     "savefig.bbox": "tight",
     "svg.fonttype": "none",
     "pdf.fonttype": 42,
@@ -52,18 +63,19 @@ If you have many related methods on one page, prefer a restrained family palette
 ## Color palette
 
 ```python
-COLORS = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b"]
+WONG = ["#000000", "#E69F00", "#56B4E9", "#009E73",
+        "#F0E442", "#0072B2", "#D55E00", "#CC79A7"]
+COLORS = [WONG[5], WONG[6], WONG[3], WONG[7], WONG[2], WONG[1]]
 ```
 
-Never use the default matplotlib cycle (perceptually uneven on screen; clashes in print).
+Use the same Wong colour-blind-safe palette as `paper-writer` and
+`literature-survey`. The default line order excludes bright yellow on white;
+reserve yellow for fills or marks with a dark edge. Never use the default
+matplotlib cycle.
 
-Alternative unified palette for method families:
-
-```python
-PALETTE_NMI_PASTEL = [
-    "#484878", "#7884B4", "#B4C0E4", "#E4E4F0", "#E4CCD8", "#F0C0CC"
-]
-```
+The experiment examples default to 8 pt for comfortable standalone reading.
+Seven points is the final-size floor, not a target; use more space and larger
+type when the venue and panel density allow it.
 
 ## Required figure families
 
@@ -129,6 +141,19 @@ ax.text(-0.12, 1.03, "(a)", transform=ax.transAxes,
 
 Keep the position consistent across panels in the same figure family.
 
+## Text collision rules
+
+- Keep final-size text at or above 7 pt.
+- Shorten or wrap long categorical labels. Keep multi-line labels horizontal;
+  rotate only short single-line labels (`rotation=30, ha="right",
+  rotation_mode="anchor"`), or use a horizontal chart.
+- If six or more marks need direct labels, label only the extremes or move
+  detail to a table.
+- Place annotations, panel letters, and watermarks in verified clear space.
+  Automatic layout calls do not prove that text is collision-free.
+- Render the final PDF to PNG and inspect it at its intended paper size. Any
+  text touching other text or data, clipping, or missing series is a failure.
+
 ## Captions
 
 Every caption stands alone (a reader who only sees the figure should understand it). Aim for 1–3 sentences naming axes, what the panels show, and what the takeaway is.
@@ -144,10 +169,12 @@ If `results.json` provenance is `"simulated"`, add a discreet watermark to each 
 ```python
 ax.text(0.99, 0.02, "simulated",
         transform=ax.transAxes, ha="right", va="bottom",
-        fontsize=7, color="gray", alpha=0.7, style="italic")
+        fontsize=7, color="gray", alpha=0.5, style="italic")
 ```
 
-This is a redundancy with the caption, on purpose — readers who skim only figures (more common than you'd think) need a visible flag.
+Move the marker to a verified clear corner for the actual data. If no clear
+in-axes location exists, place it in the figure margin or rely on the mandatory
+caption disclosure rather than covering evidence.
 
 ## Export policy
 
@@ -164,6 +191,10 @@ Do not store absolute paths in `manifest.json`; only basenames.
 - **Pie / donut charts** — almost never the right choice; never for experimental data.
 - **Default matplotlib colors** — perceptually uneven; use the palette above.
 - **Legend overlapping data** — move it or shrink data range.
+- **Text below 7 pt, overlapping, or clipped** — redesign the layout; do not
+  shrink it into compliance.
+- **Mermaid, PlantUML, generic flowchart/mind-map, or editor/UI screenshot** —
+  not a paper figure.
 - **Captions that say only "Comparison results"** — say what's being compared and what we learn.
 - **Watermark missing** in simulated mode — caption without watermark is not enough.
 - **Raster (.png) instead of vector (.pdf)** — pixelates in print.
@@ -194,5 +225,7 @@ After adding a figure, append an entry to `figures/manifest.json` so downstream 
 - [ ] Each figure has a `make_fig_NN_*.py` script alongside
 - [ ] Each figure referenced by the report and / or paper
 - [ ] Each caption stands alone
+- [ ] Final-size raster inspected; no text/data collisions, clipping, or missing marks
+- [ ] No generic diagram-tool output or screenshots
 - [ ] Simulated figures carry watermark + caption disclaimer
 - [ ] `manifest.json` lists every figure

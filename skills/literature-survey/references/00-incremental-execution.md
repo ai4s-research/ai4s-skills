@@ -10,7 +10,7 @@ This reference defines the only execution mode that works: **incremental, file-p
 
 ### Invariant 1 — Filesystem is the source of truth
 
-Every intermediate result is written to disk **immediately**. A new BibTeX entry is appended to `bibliography.bib` the moment it is extracted from a WebFetch result, not after the batch finishes. A rewritten section is Written to `sections/<name>.tex` the moment it is drafted, not after all seven are drafted. A generated figure is committed to `figures/fig_NN_<name>.pdf` and the matching script is saved alongside.
+Every intermediate result is written to disk **immediately**. A new BibTeX entry is appended to `bibliography.bib` the moment it is extracted from a WebFetch result, not after the batch finishes. A rewritten section is Written to `sections/<name>.tex` the moment it is drafted, not after all seven are drafted. A generated figure is committed to `figures/fig_NN_<name>.pdf` and the matching script is saved alongside. Assign `NN` only after planning narrative first-use order; it is a file-order aid, never a manually written caption number.
 
 If the conversation context fills, the agent crashes, or the user pivots, **the files survive**. Resumption reads the files and continues.
 

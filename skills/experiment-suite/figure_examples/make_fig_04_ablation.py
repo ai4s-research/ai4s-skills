@@ -33,7 +33,6 @@ for ax, name in zip(axes.flat, DATASETS):
     ax.set_xscale("log", base=2)
     ax.set_xticks(horizons)
     ax.set_xticklabels([str(h) for h in horizons])
-    ax.grid(True, alpha=0.25, linewidth=0.4)
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
 
@@ -48,9 +47,9 @@ fig.legend(handles, labels, loc="upper center", bbox_to_anchor=(0.5, 1.02),
 
 for ax, label in zip(axes.flat, "abcd"):
     ax.text(-0.15, 1.05, f"({label})", transform=ax.transAxes,
-            fontweight="bold", fontsize=10)
+            fontweight="bold", fontsize=9)
 
-add_simulated_watermark(fig.axes[-1], y=-0.22)
+add_simulated_watermark(fig.axes[-1])
 
 plt.tight_layout(rect=(0.0, 0.01, 1.0, 0.95))
 out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fig_04_ablation_panels")
